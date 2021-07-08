@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1622571290358.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "1B77410B",
+    "lastKnownWriteTime" : 1623877325,
+    "last_content_update" : 1623877325677,
+    "path" : "~/Documents/GitHub/ExtensionsBART/semiBART/Tests.R",
+    "project_path" : "Tests.R",
+    "properties" : {
+        "cursorPosition" : "0,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

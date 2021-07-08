@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1623781160448.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "4EA9A44D",
+    "lastKnownWriteTime" : 1617046986,
+    "last_content_update" : 1617046986,
+    "path" : "~/Documents/GitHub/ExtensionsBART/semiBART/R/parameters_quantities_tree.R",
+    "project_path" : "R/parameters_quantities_tree.R",
+    "properties" : {
+        "cursorPosition" : "139,1",
+        "scrollLine" : "65"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

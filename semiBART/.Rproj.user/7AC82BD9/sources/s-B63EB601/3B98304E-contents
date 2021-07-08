@@ -1,0 +1,71 @@
+library(ggplot2)
+#---Input Parameter Values: The True values---
+load("output/input_par_values/input_par_values_new.RData")
+#---Simulated Data--
+out<-readRDS("output/Spline_st_spline_t_lin_y_vals_index_new.rds")
+Simulated <- coda::as.mcmc(out) #simulated data
+output_data_with_delta <- as.vector(Simulated) #y values--> new data going into my model
+delta_s <- tail(output_data_with_delta, n= input_par_values$N_s_knots)#Need this for plots later
+
+#--JAGS output---
+JAGS_model_output<-readRDS(file="output/JAGS_Spline_st_spline_t_lin_index_new.rds")
+#---Site specific rates of change--
+delta_s_post <- JAGS_model_output$BUGSoutput$sims.list$delta_s
+RSL_mod_space <- matrix(NA,nrow = dim(delta_s_post)[1],ncol = length(unique(input_par_values$data_site)))
+#for (i in 1:dim(RSL_mod_space)[1]) {
+for (i in 1:100) {
+  RSL_mod_space[i,] <-unique(input_par_values$Z_s) %*% delta_s_post[i,]
+  #RSL_mod_space[i,] <- input_par_values$Z_s[data_site[i]] %*% delta_s_post[i,]
+}
+RSL_mod_val_space<-apply(RSL_mod_space,2,median)
+RSL_mod_lwr<-apply(RSL_mod_space,2,quantile,probs=0.025)
+RSL_mod_upr<-apply(RSL_mod_space,2,quantile,probs=0.975)
+space_output_df<-data.frame(RSL_mod_val_space,RSL_mod_upr,RSL_mod_lwr,unique(input_par_values$data_site),ID = "Posterior Linear Component-Slopes")
+names(space_output_df)<-c("RSL","upr","lwr","data_site","ID")
+
+
+#---True site specific slopes----
+delta_s <- delta_s #vector of 48 knots
+# RSL_mod_space <- matrix(NA,nrow = length(alpha_post),ncol = length(unique(input_par_values$data_site)))
+# for (i in 1:dim(RSL_mod_space)[1]) {
+#   RSL_mod_space[i,] <-unique(input_par_values$Z_s) %*% delta_s[i,]
+# }
+#RSL_mod_space <- matrix(NA,nrow = input_par_values$N,ncol = length(unique(input_par_values$data_site)))
+# RSL_mod_space <- matrix(NA,ncol = length(delta_s),nrow = length(unique(input_par_values$data_site)))
+# for (i in 1:dim(RSL_mod_space)[1]) {
+#   RSL_mod_space[i,] <-input_par_values$Z_s[i,]%*% delta_s[input_par_values$data_site[i]]
+#}
+
+#RSL_mod_val_space<-apply(RSL_mod_space,2,median)
+#RSL_mod_lwr<-apply(RSL_mod_space,2,quantile,probs=0.025)
+#RSL_mod_upr<-apply(RSL_mod_space,2,quantile,probs=0.975)
+#space_output_df<-data.frame(RSL_mod_val_space,RSL_mod_upr,RSL_mod_lwr,input_par_values$data_site,ID = "Posterior Linear Component-Slopes")
+#names(space_output_df)<-c("RSL","upr","lwr","data_site","ID")
+#RSL_space_lin<- as.vector(unique(input_par_values$Z_s) %*% delta_s)
+
+RSL_space_lin<- as.vector(input_par_values$Z_s %*% delta_s)
+space_lin_input_df <- cbind(RSL_space_lin, unique(input_par_values$data_site))
+
+
+#RSL_space_lin <- rep(RSL_space_lin,each = 20)
+#RSL_mod_space<- input_par_values$Z_s %*% delta_s
+#space_lin_input_df<-data.frame(expand.grid(input_par_values$data_site,RSL_space_lin),ID = "True Linear Component-Slopes")
+space_lin_input_df<-data.frame(RSL_space_lin,unique(input_par_values$data_site),ID = "True Linear Component-Slopes")
+names(space_lin_input_df)<-c("RSL","data_site","ID")
+
+
+#GIA_slope_df<-data.frame(expand.grid(input_par_values$data_site,true_slopes),ID = "Linear Component-True GIA Slopes")
+#GIA_slope_df<-data.frame(input_par_values$data_site,true_slopes,ID = "Linear Component-True GIA Slopes")
+#names(GIA_slope_df)<-c("data_site","RSL","ID")
+#----Boxplot for linear---
+space_pred_box_plot<- ggplot()+
+  #geom_boxplot(data=space_output_df,aes(x=data_site,y=RSL,colour=ID))+
+  #geom_point(data=GIA_slope_df,aes(x=data_site,y=RSL,colour=ID))+
+  geom_point(data=space_lin_input_df,aes(x=data_site,y=RSL,colour=ID))+
+  ggtitle("Linear Trend and Spline in Space: Linear Component for East Coast of North America")+
+  theme_bw()+
+  ylab('Simulated RSL')+
+  scale_y_continuous()+
+  facet_wrap(~data_site,scales="free")+
+  xlab('Simulated Data Site')
+space_pred_box_plot

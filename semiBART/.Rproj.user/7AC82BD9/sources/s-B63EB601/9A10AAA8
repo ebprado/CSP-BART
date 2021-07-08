@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1623781161152.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "9A10AAA8",
+    "lastKnownWriteTime" : 1622493966,
+    "last_content_update" : 1622493966,
+    "path" : "~/Documents/GitHub/ExtensionsBART/semiBART/R/predict_tree.R",
+    "project_path" : "R/predict_tree.R",
+    "properties" : {
+        "cursorPosition" : "5,36",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

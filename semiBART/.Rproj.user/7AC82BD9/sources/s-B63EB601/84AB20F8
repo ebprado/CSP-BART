@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1624393611380.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "84AB20F8",
+    "lastKnownWriteTime" : 1624379418,
+    "last_content_update" : 1624394011351,
+    "path" : "~/Downloads/first-sample/run/locallinearForecast.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "43,0",
+        "scrollLine" : "20"
+    },
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

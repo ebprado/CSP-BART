@@ -1,0 +1,14 @@
+N = 100
+MC = 10 # or 20 (MC = Monte Carlo repetition)
+for (i in 1:MC){
+  set.seed(i)
+  train_index <- sort(sample(1:N, size = floor(0.8 * N), replace = FALSE))
+  test_index <- (1:N)[which(! (1:N) %in% train_index)]
+  Y_train <- Y[train_index,]
+  Y_test <- Y[-train_index,]
+  
+  # Do stuff  
+  # Save stuff
+}
+
+

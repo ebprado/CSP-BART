@@ -1,0 +1,81 @@
+load("rawdata.RData")
+library(MOTRbart)
+Y=dados    #The first column contains the dependent variables and the third-123th column contains the x-variables
+dum=rep(0,nrow(Y))
+dum[which.min(Y[,1])]=1
+Y=cbind(Y,dum=dum)
+source("predict_tree.R")
+source("aux_tree.R")
+source("MOTR_BART.R")
+y = Y[,1]
+
+nprev=1
+
+
+#This part is running. However when replacing floor(359) by floor(670), an error occurs. 
+#N = 671
+#train_index <- sort(sample(1:N, size = floor(359), replace = FALSE))
+#Y_train = Y[train_index,]
+#Y_test = Y[-train_index,]
+#fit.motr.bart = motr_bart(Y_train[,3:123],Y_train[,1], ntrees = 10, nburn = 20, npost = 50) 
+#motrbart = predict_motr_bart(fit.motr.bart, Y_test[,3:123], type='mean')
+
+#This function runs the MOTR-BART model and return prediction values.
+run.motrbartfunc=function(Y,a,lag){
+  #N=a+h
+  N=671
+  #train_index <- sort(sample(1:(a+h), size = floor(a), replace = FALSE))
+  train_index <- sort(sample(1:N, size = floor(a), replace = FALSE))
+  Y_train = Y[train_index,]
+  Y_test = Y[-train_index,]
+  fit.motr.bart = motr_bart(Y_train[,3:123],Y_train[,lag], ntrees = 10, nburn = 20, npost = 50) 
+  motrbart = predict_motr_bart(fit.motr.bart, Y_test[,3:123], type='mean')
+  
+  pred = data.matrix(motrbart, rownames.force = NA)
+  
+  return(list("fact"=pred))
+  
+}
+#Create matrix for the prediction values
+save.pred=matrix(NA,nprev,1)
+
+
+#Function for rolling window and calculating the RMSE, MAE and MAD
+motrbart.rw=function(Y,nprev,lag=1,h=1){
+  for(i in nprev:1){
+    #Y.window=Y[(1+nprev-i-(h-1)):(nrow(Y)-i)-(h-1),]
+    a = (nrow(Y)-i-(h-1))
+    fact=run.motrbartfunc(Y, a,1)
+    pred = fact$fact
+    save.pred[(1+nprev-i),]=pred[(h+1),1]
+    cat("iteration",(1+nprev-i),"\n")
+  }
+  
+  real=Y[,1]
+  plot(real,type="l")
+  lines(c(rep(NA,length(real)-nprev),save.pred),col="red")
+  
+  rmse=sqrt(mean((tail(real,nprev)-save.pred)^2))
+  mae=mean(abs(tail(real,nprev)-save.pred))
+  
+  medianerror = median((tail(real,nprev)-save.pred))  #bij toegevoegd
+  mad = median(abs((tail(real,nprev)-save.pred)-medianerror)) #bij toegevoegd 
+  return(list(errors=c("rmse"=rmse,"mae"=mae, "mad"=mad))) 
+}
+
+
+#Calculating the errors for the MOTR-BART model for the dataset Y, nprev=312 predictions values, lag 1, horizon 1,2,..,12
+motrbart1=motrbart.rw(Y,nprev,1,1)
+#motrbart2=motrbart.rw(Y,nprev,1,2)
+#motrbart3=motrbart.rw(Y,nprev,1,3)
+#motrbart4=motrbart.rw(Y,nprev,1,4)
+#motrbart5=motrbart.rw(Y,nprev,1,5)
+#motrbart6=motrbart.rw(Y,nprev,1,6)
+#motrbart7=motrbart.rw(Y,nprev,1,7)
+#motrbart8=motrbart.rw(Y,nprev,1,8)
+#motrbart9=motrbart.rw(Y,nprev,1,9)
+#motrbart10=motrbart.rw(Y,nprev,1,10)
+#motrbart11=motrbart.rw(Y,nprev,1,11)
+#motrbart12=motrbart.rw(Y,nprev,1,12)
+
+

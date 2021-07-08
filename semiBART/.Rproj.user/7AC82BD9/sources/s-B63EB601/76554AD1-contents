@@ -1,0 +1,38 @@
+library(devtools)
+install_github("ebprado/AMBARTI/R package", ref='main')
+
+library(AMBARTI)
+rm(list = ls())
+
+# Simulate data -----------------------------------------------------------
+I          = 10 # Number of genotypes
+J          = 10 # Number of environments
+s_alpha    = 1 # standard deviation of alpha
+s_beta     = 1 # standard deviation of alpha
+s_y        = 1 # standard deviation of y
+lambda     = c(10, 8) # values for lambda
+
+# Set a seed to make it reproducible
+set.seed(001)
+
+# Generate data from the AMMI model  
+data = generate_data_AMMI(I, J, s_alpha, s_beta, s_y, lambda)
+dat1 = cbind(y = data$y, data$x)
+dat2 = as.data.frame(matrix(rnorm(200), ncol=2))
+aa = semiBART::semibart(y ~ g + e, dat1, dat2)
+
+# Plot the main effects estimates and add the true values
+beta_hat = apply(aa$beta_hat, 2, mean)
+g_hat = beta_hat[which(grepl('^g.', names(beta_hat)))]
+e_hat = beta_hat[which(grepl('^e.', names(beta_hat)))]
+
+plot(1:length(data$g), data$g, col=2, cex=2, main='AMBARTI-Genotype', ylim=c(-5,5)) # true values
+points(g_hat, cex=2, pch = 2) # estimates
+legend(7,4,'AMBARTI', col=1, pch = 2, bty='n')
+legend(7,5,'True', col=2, pch = 1, cex=1, bty='n')
+
+# Plot the main effects estimates and add the true values
+plot(1:length(data$e), data$e, col=2, cex=2, main='AMBARTI-Environment', ylim=c(-5,5)) # true values
+points(e_hat, cex=2, pch = 2) # estimates
+legend(7,4,'AMBARTI', col=1, pch = 2, bty='n')
+legend(7,5,'True', col=2, pch = 1, cex=1, bty='n')
