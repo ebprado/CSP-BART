@@ -263,6 +263,10 @@ var_used_trees = function(object, raw = FALSE) {
     }
   }
 if (raw == TRUE) {return(data.frame(vars_trees))}
-if (raw == FALSE) {return(as.data.frame(table(vars_trees)))}
-
+if (raw == FALSE) {
+  vars_trees = as.data.frame(table(vars_trees))
+  aux_count_var = strsplit(as.character(vars_trees[,'vars_trees']),',')
+  vars_trees$count = sapply(aux_count_var, function(x) length(x))
+  return(vars_trees)
+  }
 }

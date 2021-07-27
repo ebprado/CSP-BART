@@ -7,7 +7,6 @@
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
 #'
 
-# formula
 # x1 # it needs to contain the response
 # x2 # it doesn't need to contain the response
 # sparse = FALSE
