@@ -33,7 +33,7 @@ predict_semibart = function(object, newdata_x1, newdata_x2,
                  median = X1%*%beta_hat + object$y_sd * apply(y_hat_mat,2,'median'))
   } else {
 
-    switch(type,
+    out = switch(type,
            all = X1%*%beta_hat + object$y_mean + object$y_sd * y_hat_mat,
            mean = X1%*%beta_hat + object$y_mean + object$y_sd * apply(y_hat_mat,2,'mean'),
            median = X1%*%beta_hat + object$y_mean + object$y_sd * apply(y_hat_mat,2,'median'))
