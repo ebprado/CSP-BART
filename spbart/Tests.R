@@ -1,11 +1,11 @@
 library(devtools)
 library(dbarts)
-remove.packages('semiBART')
+remove.packages('spbart')
 load_all()
 document()
 check()
 build()
-install_github("ebprado/ExtensionsBART/semiBART")
+install_github("ebprado/SP-BART")
 
 apply(ambarti$g_hat, 2, mean) - ambarti$y_mean
 
