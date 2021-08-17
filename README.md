@@ -6,6 +6,6 @@ In addition, it provides an implementation of SP-BART in the format of an R pack
 ## Installation
 ``` r
 library(devtools)
-install_github("ebprado/SP-BART/semiBART")
+install_github("ebprado/SP-BART/spbart",ref='main')
 ```
 ## Example
