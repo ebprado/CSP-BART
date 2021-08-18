@@ -22,20 +22,39 @@ var = 1
 data = friedman_data(n, ncov, sqrt(var))
 
 y = data$y # response variable
-x = data$x # all covariates
-friedman_data = as.data.frame(cbind(y,x)) # all covariates + the response
+X1 = as.data.frame(cbind(y,data$x)) # all covariates + the response
+X2 = data$x # all covariates
 
-# Run the semi-parametric BART --------------
-spbart.fit = spbart::semibart(formula = y ~ 0 + V4 + V5, sparse = TRUE, x1 = friedman_data, x2 = x, ntrees = 1, nburn = 2000, npost = 1000)
+# Run the semi-parametric BART (WITHOUR intercept)--------------
+spbart.fit = spbart::semibart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2, ntrees = 1, nburn = 2000, npost = 1000)
+
+# Run the semi-parametric BART (WITH intercept)--------------
+# spbart.fit = spbart::semibart(formula = y ~ V4 + V5, sparse = TRUE, x1 = X1, x2 = X2, ntrees = 1, nburn = 2000, npost = 1000)
 
 # Calculate the predicted values (yhat) and parameter estimates (betahat) ------
 yhat = apply(spbart.fit$y_hat,2,mean)
 betahat = apply(spbart.fit$beta_hat,2,mean)
 
 # Predict on a new dataset
-yhat_pred = spbart::predict_semibart(spbart.fit, newdata_x1 = friedman_data, newdata_x2 = x, type = 'mean')
+yhat_pred = spbart::predict_semibart(spbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
+cor(yhat,yhat_pred) == 1
 
 # Plot --------------
 plot(y, yhat);abline(0,1)
-plot(1:2, c(10,5), main = 'True versus estimates')
+plot(1:2, c(10,5), main = 'True versus estimates', ylim=c(3,12))
 points(1:2, betahat, col=2, pch=2)
+
+## SP-BART for a binary response --------------
+n = 200
+ncov = 5
+var = 1
+data = friedman_data(n, ncov, sqrt(var))
+
+aux = data$y
+y = ifelse(aux > median(aux), 1, 0)
+X1 = as.data.frame(cbind(y,data$x)) # all covariates + the response
+X2 = data$x # all covariates
+
+# Run the semi-parametric BART (WITH intercept)--------------
+spbart.fit = spbart::cl_semibart(formula = y ~ V4 + V5, x1 = X1, x2 = X2, ntrees = 1, nburn = 2000, npost = 1000)
+

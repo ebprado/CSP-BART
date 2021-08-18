@@ -330,7 +330,7 @@ cl_semibart = function(formula,
     if((i > nburn) & ((i - nburn) %% nthin) == 0) {
       curr = (i - nburn)/nthin
       tree_store[[curr]] = curr_trees
-      y_hat_store[curr,] = pnorm(y_hat)
+      y_hat_store[curr,] = y_hat
       var_count_store[curr,] = var_count
       s_prob_store[curr,] = s
       beta_store[curr,] = beta_hat
