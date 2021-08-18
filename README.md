@@ -10,6 +10,9 @@ install_github("ebprado/SP-BART/spbart",ref='main')
 ```
 ## Example
 ``` r
+library(spbart)
+rm(list = ls())
+
 # Simulate from Friedman equation -------------------------
 friedman_data = function(n, num_cov, sd_error){
   x = matrix(runif(n*num_cov),n,num_cov)
