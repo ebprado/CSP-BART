@@ -36,7 +36,7 @@ spbart.fit = spbart::semibart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2, ntree
 # Run the semi-parametric BART (WITH intercept)
 # spbart.fit = spbart::semibart(formula = y ~ V4 + V5, x1 = X1, x2 = X2, ntrees = 10, nburn = 2000, npost = 1000)
 
-# Calculate the predicted values (yhat) and parameter estimates (betahat) ------
+# Calculate the predicted values (yhat) and parameter estimates (betahat)
 yhat = apply(spbart.fit$y_hat,2,mean)
 betahat = apply(spbart.fit$beta_hat,2,mean)
 
