@@ -27,7 +27,7 @@ semibart = function(formula,
                    x1, # it needs to contain the response
                    x2, # it doesn't need to contain the response
                    sparse = FALSE,
-                   ntrees = 10,
+                   ntrees = 50,
                    node_min_size = 5,
                    alpha = 0.95,
                    beta = 2,
@@ -246,7 +246,7 @@ cl_semibart = function(formula,
                     x1, # it needs to contain the response
                     x2, # it doesn't need to contain the response
                     sparse = FALSE,
-                    ntrees = 10,
+                    ntrees = 50,
                     node_min_size = 5,
                     alpha = 0.95,
                     beta = 2,
