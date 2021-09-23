@@ -70,7 +70,7 @@ X2 = data$x # all covariates
 spbart.fit = spbart::cl_semibart(formula = y ~ V4 + V5, x1 = X1, x2 = X2, ntrees = 1, nburn = 2000, npost = 1000)
 
 # Calculate the predicted values (yhat) and parameter estimates (betahat)
-yhat = pnorm(apply(spbart.fit$y_hat,2,mean))
+yhat = apply(pnorm(spbart.fit$y_hat),2,mean)
 betahat = apply(spbart.fit$beta_hat,2,mean)
 
 # Predict on a new dataset
