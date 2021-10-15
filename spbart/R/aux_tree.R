@@ -197,7 +197,7 @@ MakeDesignMatrix <- function(formula, data){
 
 MakeDesignMatrixPredict <- function(formula, data){
 
-  aux1 = gsub("[^[:alnum:]]", ' ', formula[3]) # take the terms in the predictor and remove numbers and special characters
+  aux1 = gsub("[^[:alnum:]_.]", ' ', formula[3]) # take the terms in the predictor and remove numbers and special characters (expect _ and .)
   aux2 = sort(unlist(strsplit(aux1, ' ')), decreasing = TRUE)[1] # get the first non-empty character
   new_formula = as.formula(paste(aux2, '~' ,formula[3])) # remove the response, as the new dataset don't have it
 
