@@ -28,13 +28,13 @@ predict_semibart = function(object, newdata_x1, newdata_x2,
   if (colnames(X1)[1] == '(Intercept)') {
     # Sort out what to return
     out = switch(type,
-                 all = X1%*%beta_hat + object$y_sd * y_hat_mat,
+                 all = sweep(object$y_sd * y_hat_mat, 2, as.numeric(X1%*%beta_hat), "+"),
                  mean = X1%*%beta_hat + object$y_sd * apply(y_hat_mat,2,'mean'),
                  median = X1%*%beta_hat + object$y_sd * apply(y_hat_mat,2,'median'))
   } else {
 
     out = switch(type,
-           all = X1%*%beta_hat + object$y_mean + object$y_sd * y_hat_mat,
+           all = sweep(object$y_mean + object$y_sd * y_hat_mat, 2, as.numeric(X1%*%beta_hat), "+"),
            mean = X1%*%beta_hat + object$y_mean + object$y_sd * apply(y_hat_mat,2,'mean'),
            median = X1%*%beta_hat + object$y_mean + object$y_sd * apply(y_hat_mat,2,'median'))
   }
@@ -76,7 +76,7 @@ cl_predict_semibart = function(object, newdata_x1, newdata_x2,
 
     # Sort out what to return
     out = switch(type,
-           all = X1%*%beta_hat + y_hat_mat,
+           all = sweep(y_hat_mat, 2, as.numeric(X1%*%beta_hat), "+"),
            mean = pnorm(X1%*%beta_hat + apply(y_hat_mat,2,'mean')),
            median = pnorm(X1%*%beta_hat + apply(y_hat_mat,2,'median')))
 
