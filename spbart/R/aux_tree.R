@@ -270,3 +270,36 @@ if (raw == FALSE) {
   return(vars_trees)
   }
 }
+
+get_ancestors = function(tree){
+
+  save_ancestor = NULL
+  which_terminal = which(tree$tree_matrix[,'terminal'] == 1)
+
+  if(nrow(tree$tree_matrix) == 1) {
+    save_ancestor = cbind(terminal = NULL,
+                          ancestor = NULL)
+  } else {
+    for (k in 1:length(which_terminal)){
+      get_parent = as.numeric(as.character(tree$tree_matrix[which_terminal[k], 'parent'])) # get the 1st parent
+      get_split_var = as.character(tree$tree_matrix[get_parent, 'split_variable']) # then, get the covariate associated to the row of the parent
+
+      save_ancestor = rbind(save_ancestor,
+                            cbind(terminal = which_terminal[k],
+                                  # parent   = get_parent,
+                                  ancestor = get_split_var))
+      while (get_parent > 1){
+        get_parent = as.numeric(as.character(tree$tree_matrix[get_parent,'parent'])) # then, get the subsequent parent
+        get_split_var = as.character(tree$tree_matrix[get_parent, 'split_variable']) # then, get the covariate associated to the row of the new parent
+        save_ancestor = rbind(save_ancestor,
+                              cbind(terminal = which_terminal[k],
+                                    # parent   = get_parent,
+                                    ancestor = get_split_var))
+      }
+    }
+    save_ancestor = unique(save_ancestor) # remove duplicates
+    save_ancestor = save_ancestor[order(save_ancestor[,1], save_ancestor[,2]),] # sort by terminal and ancestor
+  }
+
+  return(save_ancestor)
+}

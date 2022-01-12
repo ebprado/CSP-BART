@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------#
-# Description: this script contains 2 functions that are used to generate  #
+# Description: this script contains functions that are used to generate    #
 #              the predictions, update variance and compute the tree prior #
 #              and the marginalised likelihood                             #
 # -------------------------------------------------------------------------#
@@ -12,58 +12,88 @@
 # 6. get_number_distinct_cov: counts the number of distinct covariates that are used in a tree to create the splitting rules
 # Compute the full conditionals -------------------------------------------------
 
-tree_full_conditional = function(tree, R, sigma2, sigma2_mu) {
+tree_full_conditional = function(tree, R, sigma2, sigma2_mu, common_vars) {
 
   # Function to compute log full conditional distirbution for an individual tree
   # R is a vector of partial residuals
 
-  # Need to calculate log complete conditional, involves a sum over terminal nodes
-
   # First find which rows are terminal nodes
   which_terminal = which(tree$tree_matrix[,'terminal'] == 1)
 
+  # Identify those terminals that don't have a double split or are stumps
+  if(nrow(tree$tree_matrix) != 1) {
+    terminal_ancestors = get_ancestors(tree) # get the ancestor for all terminal nodes
+    aux_table = table(terminal_ancestors[,1], terminal_ancestors[,2]) # create a table
+    which_terminals_one_split = which(apply(aux_table,1,sum) == 1) # Find terminals which have only one covariate as ancestor
+    get_index = apply(aux_table[which_terminals_one_split, ],1, function(x) which(x == 1)) # get the index of the column associated to the splitting rule
+    check_common_vars = get_index %in% which(colnames(aux_table) %in% common_vars) # check whether the covariate is common to X1 and X2
+    which_terminal_no_double_split = names(get_index)[check_common_vars] # terminals with only one ancestor where the ancestor is common to X1 and X2
+
+  } else{
+    which_terminal_no_double_split = 1 # stump
+  }
+
+  # set up sigma2_mu = 0 for all which_terminal_no_double_split
+  sigma2_mu_aux = rep(sigma2_mu, length(which_terminal))
+  sigma2_mu_aux[which(which_terminal %in% which_terminal_no_double_split)] = 0
+
   # Get node sizes for each terminal node
-  nj = tree$tree_matrix[which_terminal,'node_size']
+  nj = as.numeric(tree$tree_matrix[which_terminal,'node_size'])
 
   # Get sum of residuals and sum of residuals squared within each terminal node
   sumRsq_j = aggregate(R, by = list(tree$node_indices), function(x) sum(x^2))[,2]
   S_j = aggregate(R, by = list(tree$node_indices), sum)[,2]
 
   # Now calculate the log posterior
-  log_post = 0.5 * ( sum(log( sigma2 / (nj*sigma2_mu + sigma2))) +
-              sum( (sigma2_mu* S_j^2) / (sigma2 * (nj*sigma2_mu + sigma2))))
+  log_post = 0.5 * ( sum(log( sigma2 / (nj*sigma2_mu_aux + sigma2))) +
+                       sum( (sigma2_mu_aux* S_j^2) / (sigma2 * (nj*sigma2_mu_aux + sigma2))))
   return(log_post)
 }
 
-
-# Simulate_par -------------------------------------------------------------
-
-simulate_mu = function(tree, R, sigma2, sigma2_mu) {
+simulate_mu = function(tree, R, sigma2, sigma2_mu, common_vars) {
 
   # Simulate mu values for a given tree
 
   # First find which rows are terminal nodes
   which_terminal = which(tree$tree_matrix[,'terminal'] == 1)
 
+  # Identify those terminals that don't have a double split on g and e
+  if(nrow(tree$tree_matrix) != 1) {
+    terminal_ancestors = get_ancestors(tree) # get the ancestor for all terminal nodes
+    aux_table = table(terminal_ancestors[,1], terminal_ancestors[,2]) # create a table
+    which_terminals_one_split = which(apply(aux_table,1,sum) == 1) # Find terminals which have only one covariate as ancestor
+    get_index = apply(aux_table[which_terminals_one_split, ],1, function(x) which(x == 1)) # get the index of the column associated to the splitting rule
+    check_common_vars = get_index %in% which(colnames(aux_table) %in% common_vars) # check whether the covariate is common to X1 and X2
+    which_terminal_no_double_split = as.numeric(names(get_index)[check_common_vars]) # terminals with only one ancestor where the ancestor is common to X1 and X2
+
+  } else{
+    which_terminal_no_double_split = 1 # stump
+  }
+  # set up sigma2_mu = 0 for all which_terminal_no_double_split
+  sigma2_mu_aux = rep(sigma2_mu, length(which_terminal))
+  sigma2_mu_aux[which(which_terminal %in% which_terminal_no_double_split)] = 0
+
   # Get node sizes for each terminal node
-  nj = tree$tree_matrix[which_terminal,'node_size']
+  nj = as.numeric(tree$tree_matrix[which_terminal,'node_size'])
 
   # Get sum of residuals in each terminal node
   sumR = aggregate(R, by = list(tree$node_indices), sum)[,2]
 
   # Now calculate mu values
   mu = rnorm(length(nj) ,
-             mean = (sumR / sigma2) / (nj/sigma2 + sigma2_mu),
-             sd = sqrt(1/(nj/sigma2 + sigma2_mu)))
+             mean = (sumR / sigma2) / (nj/sigma2 + sigma2_mu_aux),
+             sd = sqrt(1/(nj/sigma2 + sigma2_mu_aux)))
 
   # Wipe all the old mus out for other nodes
   tree$tree_matrix[,'mu'] = NA
 
   # Put in just the ones that are useful
   tree$tree_matrix[which_terminal,'mu'] = mu
+  tree$tree_matrix[which_terminal_no_double_split, 'mu'] = 0 # set to zero the terminal node with no interaction which descends straight from the root node
 
   return(tree)
 }
+
 
 # Update sigma2 -------------------------------------------------------------
 
