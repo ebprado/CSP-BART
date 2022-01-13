@@ -11,7 +11,9 @@
 # 5. tree_full_conditional: computes the marginalised likelihood for all nodes for a given tree
 # 6. get_number_distinct_cov: counts the number of distinct covariates that are used in a tree to create the splitting rules
 # Compute the full conditionals -------------------------------------------------
-
+# tree = new_trees[[j]]
+# R = current_partial_residuals
+# common_vars = common_variables
 tree_full_conditional = function(tree, R, sigma2, sigma2_mu, common_vars) {
 
   # Function to compute log full conditional distirbution for an individual tree
@@ -25,7 +27,7 @@ tree_full_conditional = function(tree, R, sigma2, sigma2_mu, common_vars) {
     terminal_ancestors = get_ancestors(tree) # get the ancestor for all terminal nodes
     aux_table = table(terminal_ancestors[,1], terminal_ancestors[,2]) # create a table
     which_terminals_one_split = which(apply(aux_table,1,sum) == 1) # Find terminals which have only one covariate as ancestor
-    get_index = apply(aux_table[which_terminals_one_split, ],1, function(x) which(x == 1)) # get the index of the column associated to the splitting rule
+    get_index = apply(aux_table[which_terminals_one_split, ,drop=FALSE],1, function(x) which(x == 1)) # get the index of the column associated to the splitting rule
     check_common_vars = get_index %in% which(colnames(aux_table) %in% common_vars) # check whether the covariate is common to X1 and X2
     which_terminal_no_double_split = names(get_index)[check_common_vars] # terminals with only one ancestor where the ancestor is common to X1 and X2
 
@@ -62,7 +64,7 @@ simulate_mu = function(tree, R, sigma2, sigma2_mu, common_vars) {
     terminal_ancestors = get_ancestors(tree) # get the ancestor for all terminal nodes
     aux_table = table(terminal_ancestors[,1], terminal_ancestors[,2]) # create a table
     which_terminals_one_split = which(apply(aux_table,1,sum) == 1) # Find terminals which have only one covariate as ancestor
-    get_index = apply(aux_table[which_terminals_one_split, ],1, function(x) which(x == 1)) # get the index of the column associated to the splitting rule
+    get_index = apply(aux_table[which_terminals_one_split, ,drop=FALSE],1, function(x) which(x == 1)) # get the index of the column associated to the splitting rule
     check_common_vars = get_index %in% which(colnames(aux_table) %in% common_vars) # check whether the covariate is common to X1 and X2
     which_terminal_no_double_split = as.numeric(names(get_index)[check_common_vars]) # terminals with only one ancestor where the ancestor is common to X1 and X2
 
