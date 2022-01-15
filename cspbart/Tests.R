@@ -25,7 +25,7 @@ y = data$y # response variable
 X1 = as.data.frame(cbind(y,data$x)) # all covariates + the response
 X2 = data$x # all covariates
 
-# Run the semi-parametric BART (WITHOUR intercept)--------------
+# Run the semi-parametric BART (WITHOUT intercept)--------------
 spbart.fit = semibart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2, ntrees = 1, nburn = 2000, npost = 1000)
 
 # Run the semi-parametric BART (WITH intercept)--------------
