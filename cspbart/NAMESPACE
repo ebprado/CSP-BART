@@ -2,8 +2,10 @@
 
 export(cl_predict_semibart)
 export(cl_semibart)
+export(cl_sspbart)
 export(predict_semibart)
 export(semibart)
+export(sspbart)
 export(var_used_trees)
 importFrom(MCMCpack,'rdirichlet')
 importFrom(MCMCpack,'riwish')
