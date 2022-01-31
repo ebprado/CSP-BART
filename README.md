@@ -6,7 +6,7 @@ In addition, it provides an implementation of SP-BART in the format of an R pack
 ## Installation
 ``` r
 library(devtools)
-install_github("ebprado/CSP-BART/spbart",ref='main')
+install_github("ebprado/CSP-BART/cspbart",ref='main')
 ```
 ## Example
 ``` r
