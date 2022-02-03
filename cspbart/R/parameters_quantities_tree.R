@@ -83,8 +83,8 @@ simulate_mu = function(tree, R, sigma2, sigma2_mu, common_vars) {
 
   # Now calculate mu values
   mu = rnorm(length(nj) ,
-             mean = (sumR / sigma2) / (nj/sigma2 + sigma2_mu_aux),
-             sd = sqrt(1/(nj/sigma2 + sigma2_mu_aux)))
+             mean = (sumR / sigma2) / (nj/sigma2 + 1/sigma2_mu_aux),
+             sd = sqrt(1/(nj/sigma2 + 1/sigma2_mu_aux)))
 
   # Wipe all the old mus out for other nodes
   tree$tree_matrix[,'mu'] = NA
