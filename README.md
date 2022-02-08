@@ -38,14 +38,14 @@ X2 = data$x # all covariates
 cspbart.fit = cspbart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2, ntrees = 10, nburn = 2000, npost = 1000)
 
 # Run the semi-parametric BART (WITH intercept)
-# spbart.fit = cspbart(formula = y ~ V4 + V5, x1 = X1, x2 = X2, ntrees = 10, nburn = 2000, npost = 1000)
+# cspbart.fit = cspbart(formula = y ~ V4 + V5, x1 = X1, x2 = X2, ntrees = 10, nburn = 2000, npost = 1000)
 
 # Calculate the predicted values (yhat) and parameter estimates (betahat)
 yhat = apply(spbart.fit$y_hat,2,mean)
 betahat = apply(spbart.fit$beta_hat,2,mean)
 
 # Predict on a new dataset
-yhat_pred = predict_semibart(cspbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
+yhat_pred = predict_cspbart(cspbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
 cor(yhat,yhat_pred) == 1
 
 # Plot 
@@ -74,6 +74,6 @@ yhat = apply(pnorm(cspbart.fit$y_hat),2,mean)
 betahat = apply(cspbart.fit$beta_hat,2,mean)
 
 # Predict on a new dataset
-yhat_pred = cl_predict_semibart(spbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
+yhat_pred = cl_predict_cspbart(spbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
 cor(yhat,yhat_pred) == 1
 ```
