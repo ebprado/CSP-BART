@@ -1,7 +1,7 @@
-# Semi-parametric Bayesian Additive Regression trees
-This repository houses R scripts and data sets that can be used to reproduce the results presented in the paper [_Semi-parametric Bayesian Additive Regression Trees_. arXiv (2021)](https://arxiv.org/abs/2108.07636).
+# Accounting for shared covariates in semi-parametric Bayesian additive regression trees
+This repository houses R scripts and data sets that can be used to reproduce the results presented in the paper [_Accounting for shared covariates in semi-parametric Bayesian additive regression trees_. arXiv (2022)](https://arxiv.org/pdf/2108.07636.pdf).
 
-In addition, it provides an implementation of SP-BART in the format of an R package named ```spbart```.
+In addition, it provides an implementation of CSP-BART in the format of an R package named ```spbart```.
 
 ## Installation
 ``` r
