@@ -1,4 +1,4 @@
-Package: spbart
+Package: cspbart
 Type: Package
 Title: Bayesian Additive Regression Trees fully in R
 Version: 0.1.0

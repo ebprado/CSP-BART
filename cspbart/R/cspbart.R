@@ -23,7 +23,7 @@
 # npost = 1000
 # nthin = 1
 
-semibart = function(formula,
+cspbart = function(formula,
                    x1, # it needs to contain the response
                    x2, # it doesn't need to contain the response
                    sparse = FALSE,
@@ -245,7 +245,7 @@ semibart = function(formula,
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
 #'
 
-cl_semibart = function(formula,
+cl_cspbart = function(formula,
                     x1, # it needs to contain the response
                     x2, # it doesn't need to contain the response
                     sparse = FALSE,

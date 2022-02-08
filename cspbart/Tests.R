@@ -5,7 +5,7 @@ load_all()
 document()
 check()
 build()
-install_github("ebprado/SP-BART/spbart", ref='main')
+install_github("ebprado/CSP-BART/spbart", ref='main')
 library(spbart)
 
 # Simulate from Friedman equation -------------------------
