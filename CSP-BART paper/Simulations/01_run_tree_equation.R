@@ -1,9 +1,9 @@
 library(devtools)
-install_github("ebprado/SP-BART/spbart", ref = 'main')
+install_github("ebprado/CSP-BART/cspbart", ref = 'main')
 install_github("ebprado/semibart") # a modified version of the implementation of the semi-parametric BART (Zeldow et al, 2019)
 install_github("ebprado/semibart")
 
-library(spbart)
+library(cspbart)
 library(semibart)
 library(mgcv)
 library(VCBART)

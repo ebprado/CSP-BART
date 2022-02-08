@@ -1,8 +1,8 @@
 library(devtools)
-install_github("ebprado/SP-BART/spbart", ref = 'main')
+install_github("ebprado/CSP-BART/cspbart", ref = 'main')
 install_github("ebprado/semibart") # a modified version of the implementation of the semi-parametric BART (Zeldow et al, 2019)
 
-library(spbart)
+library(cspbart)
 library(semibart)
 library(mgcv)
 library(VCBART)
@@ -52,7 +52,7 @@ for (i in 1:10){ # Number of Monte Carlo repetitions
     old_semibart2 = semibart::semibart(x.train = xx2, a.train = xx1, y.train = y, ndpost = 4000, ntree = 50)
     
     # Proposed method
-    new_semibart = spbart::semibart(formula = y ~ 0 + V4 + V5, sparse = TRUE, aux_data, x2 = x, ntrees = 50, nburn = 2000, npost = 1000)
+    new_semibart = cspbart::cspbart(formula = y ~ 0 + V4 + V5, sparse = TRUE, aux_data, x2 = x, ntrees = 50, nburn = 2000, npost = 1000)
     
     # Generalised Additive Models
     gam_mod <- gam(y ~ x[,4] + x[,5] + s(x[,1], x[,2]) + s(x[,3]))
@@ -69,7 +69,7 @@ for (i in 1:10){ # Number of Monte Carlo repetitions
     file_name_data   = paste(save.path, id, 'data',           '.RData', sep='')
     
     # Save results -------------------------------------------
-  
+    
     save(old_semibart2, file = file_name_old2)
     save(new_semibart,  file = file_name_new)
     save(vcbart,        file = file_name_vcbart)
