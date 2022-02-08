@@ -197,7 +197,7 @@ head(cspbart$beta_hat)
 save(cspbart,file = 'results_CSP_BART_TIMSS2019.RData')
 load('results_CSP_BART_TIMSS2019.RData')
 apply(cspbart$beta_hat, 2, mean)
-y_hat_test = predict_semibart(cspbart, dat1_test, datx2_test, type = 'mean')
+y_hat_test = predict_cspbart(cspbart, dat1_test, datx2_test, type = 'mean')
 
 auxtrees = var_used_trees(cspbart, raw = FALSE)
 auxtrees = auxtrees %>%
