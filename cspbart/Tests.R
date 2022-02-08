@@ -1,12 +1,12 @@
 library(devtools)
 library(dbarts)
-remove.packages('spbart')
+# remove.packages('spbart')
 load_all()
 document()
 check()
 build()
-install_github("ebprado/CSP-BART/spbart", ref='main')
-library(spbart)
+#install_github("ebprado/CSP-BART/spbart", ref='main')
+library(cspbart)
 
 # Simulate from Friedman equation -------------------------
 friedman_data = function(n, num_cov, sd_error){
