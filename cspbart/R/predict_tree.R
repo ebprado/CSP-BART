@@ -1,5 +1,5 @@
 #' @export
-predict_semibart = function(object, newdata_x1, newdata_x2,
+predict_cspbart = function(object, newdata_x1, newdata_x2,
                          type = c('all', 'median', 'mean')) {
 
 
@@ -48,7 +48,7 @@ predict_semibart = function(object, newdata_x1, newdata_x2,
 ########################################################################################################
 
 #' @export
-cl_predict_semibart = function(object, newdata_x1, newdata_x2,
+cl_predict_cspbart = function(object, newdata_x1, newdata_x2,
                             type = c('all', 'median', 'mean')) {
 
 
