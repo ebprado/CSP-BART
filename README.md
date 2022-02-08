@@ -10,7 +10,7 @@ install_github("ebprado/CSP-BART/cspbart",ref='main')
 ```
 ## Example
 ``` r
-library(spbart)
+library(cspbart)
 rm(list = ls())
 
 # ---------------------------------
@@ -35,17 +35,17 @@ X1 = as.data.frame(cbind(y,data$x)) # all covariates + the response
 X2 = data$x # all covariates
 
 # Run the semi-parametric BART (WITHOUT intercept)
-spbart.fit = spbart::semibart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2, ntrees = 10, nburn = 2000, npost = 1000)
+cspbart.fit = cspbart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2, ntrees = 10, nburn = 2000, npost = 1000)
 
 # Run the semi-parametric BART (WITH intercept)
-# spbart.fit = spbart::semibart(formula = y ~ V4 + V5, x1 = X1, x2 = X2, ntrees = 10, nburn = 2000, npost = 1000)
+# spbart.fit = cspbart(formula = y ~ V4 + V5, x1 = X1, x2 = X2, ntrees = 10, nburn = 2000, npost = 1000)
 
 # Calculate the predicted values (yhat) and parameter estimates (betahat)
 yhat = apply(spbart.fit$y_hat,2,mean)
 betahat = apply(spbart.fit$beta_hat,2,mean)
 
 # Predict on a new dataset
-yhat_pred = spbart::predict_semibart(spbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
+yhat_pred = predict_semibart(cspbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
 cor(yhat,yhat_pred) == 1
 
 # Plot 
@@ -67,13 +67,13 @@ X1 = as.data.frame(cbind(y,data$x)) # all covariates + the response
 X2 = data$x # all covariates
 
 # Run the semi-parametric BART (WITH intercept)
-spbart.fit = spbart::cl_semibart(formula = y ~ V4 + V5, x1 = X1, x2 = X2, ntrees = 1, nburn = 2000, npost = 1000)
+cspbart.fit = cspbart::cl_cspbart(formula = y ~ V4 + V5, x1 = X1, x2 = X2, ntrees = 1, nburn = 2000, npost = 1000)
 
 # Calculate the predicted values (yhat) and parameter estimates (betahat)
-yhat = apply(pnorm(spbart.fit$y_hat),2,mean)
-betahat = apply(spbart.fit$beta_hat,2,mean)
+yhat = apply(pnorm(cspbart.fit$y_hat),2,mean)
+betahat = apply(cspbart.fit$beta_hat,2,mean)
 
 # Predict on a new dataset
-yhat_pred = spbart::cl_predict_semibart(spbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
+yhat_pred = cl_predict_semibart(spbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
 cor(yhat,yhat_pred) == 1
 ```
