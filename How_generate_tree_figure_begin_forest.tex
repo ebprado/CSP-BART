@@ -1,0 +1,126 @@
+\documentclass{article}
+\usepackage[linguistics]{forest, adjustbox}
+\usepackage{subcaption}
+\usepackage{algorithm, setspace}
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+\begin{document}
+
+  \begin{figure}[H]
+  \captionsetup[subfigure]{font=normalsize}
+        \centering
+        \begin{subfigure}[b]{0.485\textwidth}
+            \centering
+            \caption[]%
+            {$\mathcal{T}^{(1)}_{1}$}
+            \begin{forest}
+for tree={
+    grow=south, draw, minimum size=3ex, 
+    inner sep=3pt, % control the overall tree size
+    s sep=7mm,
+    l sep=6mm
+    }
+[$\:x_{2} < 1\:$,
+    [$\:x_{1} < 0.5\:$, edge label={node[midway, font=\footnotesize, left]{$\mbox{ TRUE }$}}
+        [$\mu_{11}$, circle,  edge label={node[midway,left, font=\footnotesize]{$\mbox{ TRUE }$}},]
+        [$\mu_{12}$, circle,  edge label={node[midway,right, font=\footnotesize]{$\mbox{ FALSE }$}},]
+    ]
+    [$\mu_{13}$, circle,  edge label={node[midway,right, font=\footnotesize]{$\mbox{ FALSE }$}},]
+]
+\end{forest}
+            \label{fig:mean and std of net14}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.485\textwidth}  
+            \centering 
+            \caption[]%
+            {$\mathcal{T}^{(2)}_{1}$}
+\begin{forest}
+for tree={
+    grow=south, draw, minimum size=3ex, 
+    inner sep=3pt, % control the overall tree size
+    s sep=7mm,
+    l sep=6mm
+        }
+[$\:x_{2} < 1\:$,
+    [$\:x_{1} < 0.5\:$,
+        [$\mu_{11}$, circle]
+        [$\mu_{12}$, circle]
+    ]
+        [$\:x_{3} < 2\:$,
+        [$\mu_{13}$, circle]
+        [$\mu_{14}$, circle]
+    ]
+]
+\end{forest}
+            \label{fig:mean and std of net24}
+        \end{subfigure}
+        \vskip2\baselineskip
+        \begin{subfigure}[b]{0.485\textwidth}   
+            \centering 
+                        \caption[]%
+            {$\mathcal{T}^{(3)}_{1}$}    
+\begin{forest}
+for tree={
+    grow=south, draw, minimum size=3ex, inner sep=3pt, s sep=7mm, l sep=6mm
+        }
+[$\:x_{2} < 1\:$,
+    [$\:x_{1} < 0.5\:$,
+        [$\mu_{11}$, circle]
+        [$\mu_{12}$, circle]
+    ]
+    [$\:x_{4} < 0.75\:$,
+        [$\mu_{13}$, circle]
+        [$\mu_{14}$, circle]
+    ]
+]
+\end{forest}
+            \label{fig:mean and std of net34}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.485\textwidth}   
+            \centering 
+            \caption[]%
+{$\mathcal{T}^{(4)}_{1}$}  
+            \begin{forest}
+for tree={
+    grow=south, draw, minimum size=3ex, inner sep=3pt, s sep=7mm, l sep=6mm
+        }
+[$\:x_{2} < 1\:$,
+    [$\:x_{4} < 0.75\:$,
+        [$\mu_{11}$, circle]
+        [$\mu_{12}$, circle]
+    ]
+    [$\:x_{1} < 0.5\:$,
+        [$\mu_{13}$, circle]
+        [$\mu_{14}$, circle]
+    ]
+]
+\end{forest}
+\end{subfigure}
+\vskip\baselineskip
+\caption{BLA BLA \label{BCART}}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+            \begin{forest}
+for tree={
+    grow=south, draw, minimum size=3ex, inner sep=3pt, s sep=7mm, l sep=6mm
+        }
+[$\:x_{1} < 0.5\:$,
+    [$\:x_{2} < 0.5\:$,
+        [$\:\:4\:\:$, circle]
+        [$-7$, circle]
+    ]
+    [$\:x_{3} < 0.5\:$,
+        [$\:\:3\:\:$, circle]
+        [$-8$, circle]
+    ]
+]
+\end{forest}\vfill
+\caption{ BLA BLA.}
+\label{LM_BART_tree}
+\end{figure}
+\end{document}
