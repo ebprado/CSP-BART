@@ -1,5 +1,4 @@
 #' @export
-#' @importFrom MCMCpack 'rdirichlet' 'riwish'
 #' @importFrom stats 'rgamma' 'runif' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'terms'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
@@ -80,11 +79,10 @@ cspbart = function(formula,
   p2 = ncol(x2)
   p = p1 + p2
   s = rep(1/p2, p2)
-  Omega = diag(p1)
-  Omega_inv = solve(Omega)
+  Omega_inv = diag(p1)
   b = rep(0, p1)
   V = diag(p1)
-  v = p1
+  v1 = p1 + 1
   beta_hat = rep(0, p1)
   current_partial_residuals = y_scale
 
@@ -125,8 +123,7 @@ cspbart = function(formula,
     yhat_linear = x1%*%beta_hat
 
     # Update covariance matrix of the linear predictor
-    Omega = update_omega(beta_hat, b, V, v)
-    Omega_inv = solve(Omega)
+    Omega_inv = update_omega_inv(beta_hat, V, v1)
 
       # Start looping through trees
       for (j in seq_len(ntrees)) {
@@ -236,7 +233,6 @@ cspbart = function(formula,
 
 
 #' @export
-#' @importFrom MCMCpack 'rdirichlet' 'riwish'
 #' @importFrom stats 'rgamma' 'runif' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'model.matrix'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
@@ -299,11 +295,10 @@ cl_cspbart = function(formula,
   p2 = ncol(x2)
   p = p1 + p2
   s = rep(1/p2, p2)
-  Omega = diag(p1)
-  Omega_inv = solve(Omega)
+  Omega_inv = diag(p1)
   b = rep(0, p1)
   V = diag(p1)
-  v = p1
+  v1 = p1 + 1
   beta_hat = rep(0, p1)
   z = ifelse(y == 0, -3, 3)
 
@@ -343,9 +338,8 @@ cl_cspbart = function(formula,
     yhat_linear = x1%*%beta_hat
 
     # Update covariance matrix of the linear predictor
-    Omega = update_omega(beta_hat, b, V, v)
-    Omega_inv = solve(Omega)
-
+    Omega_inv = update_omega_inv(beta_hat, V, v1)
+    
     # Start looping through trees
     for (j in seq_len(ntrees)) {
 

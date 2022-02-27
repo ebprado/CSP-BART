@@ -170,9 +170,17 @@ update_beta <- function(y, x, sigma2, omega_inv) { # (1) sample from MVN(Q^{-1}b
   }
 }
 
+update_omega_inv <- function(beta_hat, V, v1) {
+  rWish(v1, chol2inv(chol(tcrossprod(beta_hat) + V)))
 }
 
-update_omega <- function(beta_hat, b, V, v){
-  out = riwish(v + 1, (beta_hat - b)%*%t(beta_hat - b) + V)
-  return(out)
+rWish <- function(v, S) {
+  p   <- nrow(S)
+  CC  <- chol(S)
+  Z   <- diag(sqrt(rchisq(p, v:(v - p + 1L))), p)
+  if(p > 1) {
+    pseq <- seq_len(p - 1L)
+    Z[rep(p * pseq, pseq) + unlist(lapply(pseq, seq))] <- rnorm(p * (p - 1)/2)
+  }
+    crossprod(Z %*% CC)
 }
