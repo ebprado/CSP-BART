@@ -6,7 +6,7 @@ predict_cspbart = function(object, newdata_x1, newdata_x2,
   data_new = MakeDesignMatrixPredict(object$formula, newdata_x1)
   X1 = as.matrix(data_new$X) # matrix to be used in the linear predictor
   X2 = makeModelMatrixFromDataFrame(newdata_x2, drop = FALSE)
-  beta_hat = apply(object$beta_hat,2,mean)
+  beta_hat = colMeans(object$beta_hat)
 
   # Create holder for predicted values
   n_newX = dim(X2)[1]
@@ -29,13 +29,13 @@ predict_cspbart = function(object, newdata_x1, newdata_x2,
     # Sort out what to return
     out = switch(type,
                  all = sweep(object$y_sd * y_hat_mat, 2, as.numeric(X1%*%beta_hat), "+"),
-                 mean = X1%*%beta_hat + object$y_sd * apply(y_hat_mat,2,'mean'),
+                 mean = X1%*%beta_hat + object$y_sd * colMeans(y_hat_mat),
                  median = X1%*%beta_hat + object$y_sd * apply(y_hat_mat,2,'median'))
   } else {
 
     out = switch(type,
            all = sweep(object$y_mean + object$y_sd * y_hat_mat, 2, as.numeric(X1%*%beta_hat), "+"),
-           mean = X1%*%beta_hat + object$y_mean + object$y_sd * apply(y_hat_mat,2,'mean'),
+           mean = X1%*%beta_hat + object$y_mean + object$y_sd * colMeans(y_hat_mat),
            median = X1%*%beta_hat + object$y_mean + object$y_sd * apply(y_hat_mat,2,'median'))
   }
 
@@ -55,7 +55,7 @@ cl_predict_cspbart = function(object, newdata_x1, newdata_x2,
   data_new = MakeDesignMatrixPredict(object$formula, newdata_x1)
   X1 = as.matrix(data_new$X) # matrix to be used in the linear predictor
   X2 = makeModelMatrixFromDataFrame(newdata_x2, drop = FALSE)
-  beta_hat = apply(object$beta_hat,2,mean)
+  beta_hat = colMeans(object$beta_hat)
 
   # Create holder for predicted values
   n_newX = dim(X2)[1]
@@ -77,7 +77,7 @@ cl_predict_cspbart = function(object, newdata_x1, newdata_x2,
     # Sort out what to return
     out = switch(type,
            all = sweep(y_hat_mat, 2, as.numeric(X1%*%beta_hat), "+"),
-           mean = pnorm(X1%*%beta_hat + apply(y_hat_mat,2,'mean')),
+           mean = pnorm(X1%*%beta_hat + colMeans(y_hat_mat)),
            median = pnorm(X1%*%beta_hat + apply(y_hat_mat,2,'median')))
 
   return(out)

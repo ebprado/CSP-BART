@@ -116,9 +116,10 @@ get_children = function(tree_mat, parent) {
 
 resample <- function(x, ...) x[sample.int(length(x), size=1), ...]
 
-update_s = function(var_count, p, alpha_s){
-  s_ = rdirichlet(1, alpha_s/p + var_count)
-  return(s_)
+update_s  <- function(var_count, p, alpha_s) {
+  shape   <- alpha_s/p + var_count
+  temp    <- rgamma(length(shape), shape, rate=1)
+    temp/sum(temp)
 }
 
 get_number_distinct_cov <- function(tree){
@@ -254,16 +255,16 @@ var_used_trees = function(object, raw = FALSE) {
 
   # Get which covariates are used by each tree in each MCMC iteration
   vars_trees = matrix(NA, nrow=n_its, ncol=ntrees)
-  for (i in 1:n_its){
-    for (j in 1:ntrees){
+  for (i in seq_len(n_its)) {
+    for (j in seq_len(ntrees)) {
       aux = object$trees[[i]][[j]]$tree_matrix[,'split_variable']
       if(length(aux) > 1){
         vars_trees[i,j] = paste(colnames_x2[unique(sort(aux[!is.na(aux)]))], collapse = ',')
       }
     }
   }
-if (raw == TRUE) {return(data.frame(vars_trees))}
-if (raw == FALSE) {
+if(raw == TRUE) {return(data.frame(vars_trees))}
+if(raw == FALSE) {
   vars_trees = as.data.frame(table(vars_trees))
   aux_count_var = strsplit(as.character(vars_trees[,'vars_trees']),',')
   vars_trees$count = sapply(aux_count_var, function(x) length(x))
@@ -280,7 +281,7 @@ get_ancestors = function(tree){
     save_ancestor = cbind(terminal = NULL,
                           ancestor = NULL)
   } else {
-    for (k in 1:length(which_terminal)){
+    for (k in seq_len(length(which_terminal))) {
       get_parent = as.numeric(as.character(tree$tree_matrix[which_terminal[k], 'parent'])) # get the 1st parent
       get_split_var = as.character(tree$tree_matrix[get_parent, 'split_variable']) # then, get the covariate associated to the row of the parent
 

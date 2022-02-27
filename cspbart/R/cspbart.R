@@ -1,7 +1,7 @@
 #' @export
 #' @importFrom mvtnorm 'rmvnorm'
-#' @importFrom stats 'rgamma' 'runif' 'dnorm' 'sd' 'rnorm' 'pnorm' 'aggregate' 'as.formula' 'terms'
 #' @importFrom MCMCpack 'rdirichlet' 'riwish'
+#' @importFrom stats 'rgamma' 'runif' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'terms'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
@@ -105,7 +105,7 @@ cspbart = function(formula,
                              title = 'Running rBART...')
 
   # Start the MCMC iterations loop
-  for (i in 1:TotIter) {
+  for (i in seq_len(TotIter)) {
 
     utils::setTxtProgressBar(pb, i)
 
@@ -130,7 +130,7 @@ cspbart = function(formula,
     Omega_inv = solve(Omega)
 
       # Start looping through trees
-      for (j in 1:ntrees) {
+      for (j in seq_len(ntrees)) {
 
         current_partial_residuals = y_scale - yhat_bart - yhat_linear + tree_fits_store[,j]
 
@@ -238,8 +238,8 @@ cspbart = function(formula,
 
 #' @export
 #' @importFrom mvtnorm 'rmvnorm'
-#' @importFrom stats 'rgamma' 'runif' 'dnorm' 'sd' 'rnorm' 'pnorm' 'aggregate' 'as.formula' 'model.matrix'
 #' @importFrom MCMCpack 'rdirichlet' 'riwish'
+#' @importFrom stats 'rgamma' 'runif' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'model.matrix'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
@@ -325,7 +325,7 @@ cl_cspbart = function(formula,
                              title = 'Running rBART...')
 
   # Start the MCMC iterations loop
-  for (i in 1:TotIter) {
+  for (i in seq_len(TotIter)) {
 
     utils::setTxtProgressBar(pb, i)
 
@@ -349,7 +349,7 @@ cl_cspbart = function(formula,
     Omega_inv = solve(Omega)
 
     # Start looping through trees
-    for (j in 1:ntrees) {
+    for (j in seq_len(ntrees)) {
 
       current_partial_residuals = z - yhat_bart - yhat_linear + tree_fits_store[,j]
 

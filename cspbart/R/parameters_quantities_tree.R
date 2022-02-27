@@ -31,7 +31,7 @@ tree_full_conditional = function(tree, R, sigma2, sigma2_mu, common_vars) {
     check_common_vars = get_index %in% which(colnames(aux_table) %in% common_vars) # check whether the covariate is common to X1 and X2
     which_terminal_no_double_split = names(get_index)[check_common_vars] # terminals with only one ancestor where the ancestor is common to X1 and X2
 
-  } else{
+  } else {
     which_terminal_no_double_split = 1 # stump
   }
 
@@ -43,8 +43,8 @@ tree_full_conditional = function(tree, R, sigma2, sigma2_mu, common_vars) {
   nj = as.numeric(tree$tree_matrix[which_terminal,'node_size'])
 
   # Get sum of residuals and sum of residuals squared within each terminal node
-  sumRsq_j = aggregate(R, by = list(tree$node_indices), function(x) sum(x^2))[,2]
-  S_j = aggregate(R, by = list(tree$node_indices), sum)[,2]
+  sumRsq_j = tapply(R, tree$node_indices, function(x) sum(x^2))
+  S_j = tapply(R, tree$node_indices, sum)
 
   # Now calculate the log posterior
   log_post = 0.5 * ( sum(log( sigma2 / (nj*sigma2_mu_aux + sigma2))) +
@@ -79,12 +79,13 @@ simulate_mu = function(tree, R, sigma2, sigma2_mu, common_vars) {
   nj = as.numeric(tree$tree_matrix[which_terminal,'node_size'])
 
   # Get sum of residuals in each terminal node
-  sumR = aggregate(R, by = list(tree$node_indices), sum)[,2]
+  sumR = tapply(R, tree$node_indices, sum)
 
   # Now calculate mu values
-  mu = rnorm(length(nj) ,
-             mean = (sumR / sigma2) / (nj/sigma2 + 1/sigma2_mu_aux),
-             sd = sqrt(1/(nj/sigma2 + 1/sigma2_mu_aux)))
+  prec_mu <- nj/sigma2 + 1/sigma2_mu_aux
+  mu   <- rnorm(length(nj), 
+                mean = (sumR/sigma2)/prec_mu, 
+                sd = 1/sqrt(prec_mu))
 
   # Wipe all the old mus out for other nodes
   tree$tree_matrix[,'mu'] = NA
@@ -141,12 +142,12 @@ get_tree_prior = function(tree, alpha, beta, common_vars) {
   # Only compute for the internal nodes
   internal_nodes = which(as.numeric(tree$tree_matrix[,'terminal']) == 0)
   log_prior = 0
-  for(i in 1:length(internal_nodes)) {
-    log_prior = log_prior + log(alpha) - beta * log(1 + level[internal_nodes[i]])
+  for(i in seq_along(internal_nodes)) {
+    log_prior = log_prior + log(alpha) - beta * log1p(level[internal_nodes[i]])
   }
   # Now add on terminal nodes
   terminal_nodes = which(as.numeric(tree$tree_matrix[,'terminal']) == 1)
-  for(i in 1:length(terminal_nodes)) {
+  for(i in seq_along(terminal_nodes)) {
     log_prior = log_prior + log(1 - alpha * ((1 + level[terminal_nodes[i]])^(-beta)))
   }
 
