@@ -1,12 +1,3 @@
-#' @export
-#' @importFrom mvtnorm 'rmvnorm'
-#' @importFrom stats 'rgamma' 'runif' 'dnorm' 'sd' 'rnorm' 'pnorm' 'aggregate' 'as.formula' 'terms'
-#' @importFrom MCMCpack 'rdirichlet' 'riwish'
-#' @importFrom truncnorm 'rtruncnorm'
-#' @importFrom lme4 'lFormula'
-#' @importFrom dbarts 'makeModelMatrixFromDataFrame'
-#'
-
 # x1 = X1 # it needs to contain the response
 # x2 = X2# it doesn't need to contain the response
 # sparse = FALSE
@@ -23,6 +14,34 @@
 # npost = 1000
 # nthin = 1
 
+#' Combined Semi-Parametric BART
+#'
+#' @param formula x
+#' @param x1 x
+#' @param x2 x
+#' @param sparse x
+#' @param ntrees x
+#' @param node_min_size x
+#' @param alpha x
+#' @param beta x
+#' @param nu x
+#' @param lambda x
+#' @param mu_mu x
+#' @param sigma2 x
+#' @param sigma2_mu x
+#' @param nburn x
+#' @param npost x
+#' @param nthin x
+#'
+#' @return x
+#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'terms'
+#' @importFrom truncnorm 'rtruncnorm'
+#' @importFrom lme4 'lFormula'
+#' @importFrom dbarts 'makeModelMatrixFromDataFrame'
+#' @export
+#'
+#' @examples
+#' #
 cspbart = function(formula,
                    x1, # it needs to contain the response
                    x2, # it doesn't need to contain the response
@@ -81,11 +100,10 @@ cspbart = function(formula,
   p2 = ncol(x2)
   p = p1 + p2
   s = rep(1/p2, p2)
-  Omega = diag(p1)
-  Omega_inv = solve(Omega)
+  Omega_inv = diag(p1)
   b = rep(0, p1)
   V = diag(p1)
-  v = p1
+  v1 = p1 + 1
   beta_hat = rep(0, p1)
   current_partial_residuals = y_scale
 
@@ -105,7 +123,7 @@ cspbart = function(formula,
                              title = 'Running rBART...')
 
   # Start the MCMC iterations loop
-  for (i in 1:TotIter) {
+  for (i in seq_len(TotIter)) {
 
     utils::setTxtProgressBar(pb, i)
 
@@ -126,11 +144,10 @@ cspbart = function(formula,
     yhat_linear = x1%*%beta_hat
 
     # Update covariance matrix of the linear predictor
-    Omega = update_omega(beta_hat, b, V, v)
-    Omega_inv = solve(Omega)
+    Omega_inv = update_omega_inv(beta_hat, V, v1)
 
       # Start looping through trees
-      for (j in 1:ntrees) {
+      for (j in seq_len(ntrees)) {
 
         current_partial_residuals = y_scale - yhat_bart - yhat_linear + tree_fits_store[,j]
 
@@ -163,9 +180,9 @@ cspbart = function(formula,
           get_tree_prior(new_trees[[j]], alpha, beta, common_variables)
 
         # Exponentiate the results above
-        if (new_trees[[j]]$ForceStump == TRUE) {a=1} else {a = exp(l_new - l_old)}
+        if(isTRUE(new_trees[[j]]$ForceStump)) {a=1} else {a = l_new - l_old}
 
-        if(a > runif(1)) {
+        if(a > 0 || a > -rexp(1)) {
           curr_trees[[j]] = new_trees[[j]]
 
           if (type =='change'){
@@ -203,7 +220,7 @@ cspbart = function(formula,
     sigma2 = update_sigma2(sum_of_squares, n = length(y_scale), nu, lambda)
 
     # Update s = (s_1, ..., s_p), where s_p is the probability that predictor p is used to create new terminal nodes
-    if (sparse == 'TRUE' & i > floor(TotIter*0.1)){
+    if(isTRUE(sparse) & i > floor(TotIter*0.1)){
       s = update_s(var_count, p, 1)
     }
   } # End iterations loop
@@ -216,35 +233,55 @@ cspbart = function(formula,
        beta_hat[,1] = beta_hat[,1] + y_mean
     }
 
-  return(list(trees = tree_store,
-              sigma2 = sigma2_store*y_sd^2,
-              y_hat = y_hat_store*y_sd + y_mean,
-              beta_hat = beta_hat,
-              bart_hat = bart_store*y_sd,
-              npost = npost,
-              nburn = nburn,
-              nthin = nthin,
-              ntrees = ntrees,
-              y_mean = y_mean,
-              y_sd = y_sd,
-              var_count_store = var_count_store,
-              s = s_prob_store,
-              formula = formula,
-              colnames.x1 = colnames_x1,
-              colnames.x2 = colnames_x2))
-
+  results <- list(trees = tree_store,
+                  sigma2 = sigma2_store*y_sd^2,
+                  y_hat = y_hat_store*y_sd + y_mean,
+                  beta_hat = beta_hat,
+                  bart_hat = bart_store*y_sd,
+                  npost = npost,
+                  nburn = nburn,
+                  nthin = nthin,
+                  ntrees = ntrees,
+                  y_mean = y_mean,
+                  y_sd = y_sd,
+                  var_count_store = var_count_store,
+                  s = s_prob_store,
+                  formula = formula,
+                  colnames.x1 = colnames_x1,
+                  colnames.x2 = colnames_x2)
+  class(results) <- "cspbart"
+    return(results)
 } # End main function
 
-
+#' Combined Semi-Parametric BART for Classification
+#'
+#' @param formula x
+#' @param x1 x
+#' @param x2 x
+#' @param sparse x 
+#' @param ntrees x
+#' @param node_min_size x
+#' @param alpha x
+#' @param beta x
+#' @param nu x
+#' @param lambda x
+#' @param mu_mu x
+#' @param sigma2 x
+#' @param sigma2_mu x 
+#' @param nburn x
+#' @param npost x
+#' @param nthin x
+#' 
+#' @return x
+#'
 #' @export
-#' @importFrom mvtnorm 'rmvnorm'
-#' @importFrom stats 'rgamma' 'runif' 'dnorm' 'sd' 'rnorm' 'pnorm' 'aggregate' 'as.formula' 'model.matrix'
-#' @importFrom MCMCpack 'rdirichlet' 'riwish'
+#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'model.matrix'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
 #'
-
+#' @examples
+#' #
 cl_cspbart = function(formula,
                     x1, # it needs to contain the response
                     x2, # it doesn't need to contain the response
@@ -301,11 +338,10 @@ cl_cspbart = function(formula,
   p2 = ncol(x2)
   p = p1 + p2
   s = rep(1/p2, p2)
-  Omega = diag(p1)
-  Omega_inv = solve(Omega)
+  Omega_inv = diag(p1)
   b = rep(0, p1)
   V = diag(p1)
-  v = p1
+  v1 = p1 + 1
   beta_hat = rep(0, p1)
   z = ifelse(y == 0, -3, 3)
 
@@ -325,7 +361,7 @@ cl_cspbart = function(formula,
                              title = 'Running rBART...')
 
   # Start the MCMC iterations loop
-  for (i in 1:TotIter) {
+  for (i in seq_len(TotIter)) {
 
     utils::setTxtProgressBar(pb, i)
 
@@ -345,11 +381,10 @@ cl_cspbart = function(formula,
     yhat_linear = x1%*%beta_hat
 
     # Update covariance matrix of the linear predictor
-    Omega = update_omega(beta_hat, b, V, v)
-    Omega_inv = solve(Omega)
-
+    Omega_inv = update_omega_inv(beta_hat, V, v1)
+    
     # Start looping through trees
-    for (j in 1:ntrees) {
+    for (j in seq_len(ntrees)) {
 
       current_partial_residuals = z - yhat_bart - yhat_linear + tree_fits_store[,j]
 
@@ -382,9 +417,9 @@ cl_cspbart = function(formula,
         get_tree_prior(new_trees[[j]], alpha, beta, common_variables)
 
       # Exponentiate the results above
-      if (new_trees[[j]]$ForceStump == TRUE) {a=1} else {a = exp(l_new - l_old)}
+      if(isTRUE(new_trees[[j]]$ForceStump)) {a=1} else {a = l_new - l_old}
 
-      if(a > runif(1)) {
+      if(a > 0 || a > -rexp(1)) {
         curr_trees[[j]] = new_trees[[j]]
 
         if (type =='change'){
@@ -420,25 +455,26 @@ cl_cspbart = function(formula,
     z = update_z(y, y_hat)
 
     # Update s = (s_1, ..., s_p), where s_p is the probability that predictor p is used to create new terminal nodes
-    if (sparse == 'TRUE' & i > floor(TotIter*0.1)){
+    if(isTRUE(sparse) & i > floor(TotIter*0.1)){
       s = update_s(var_count, p, 1)
     }
   } # End iterations loop
 
   cat('\n') # Make sure progress bar ends on a new line
 
-  return(list(trees = tree_store,
-              y_hat = y_hat_store,
-              beta_hat = beta_store,
-              bart_hat = bart_store,
-              npost = npost,
-              nburn = nburn,
-              nthin = nthin,
-              ntrees = ntrees,
-              var_count_store = var_count_store,
-              s = s_prob_store,
-              formula = formula,
-              colnames.x1 = colnames_x1,
-              colnames.x2 = colnames_x2))
-
+  results <- list(trees = tree_store,
+                  y_hat = y_hat_store,
+                  beta_hat = beta_store,
+                  bart_hat = bart_store,
+                  npost = npost,
+                  nburn = nburn,
+                  nthin = nthin,
+                  ntrees = ntrees,
+                  var_count_store = var_count_store,
+                  s = s_prob_store,
+                  formula = formula,
+                  colnames.x1 = colnames_x1,
+                  colnames.x2 = colnames_x2)
+  class(results) <- "cl_cspbart"
+    return(results)
 } # End main function

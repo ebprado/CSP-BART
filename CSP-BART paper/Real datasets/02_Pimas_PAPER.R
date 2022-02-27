@@ -25,7 +25,7 @@ data(PimaIndiansDiabetes2)
 d <- na.omit(PimaIndiansDiabetes2)
 data = as.data.frame(dbarts::makeModelMatrixFromDataFrame(d))
 
-for(i in 1:(ncol(d) - 1)){
+for(i in seq_len((ncol(d) - 1))){
   plot(d[,i], d[,'diabetes'], main=colnames(d)[i])  
 }
 
@@ -88,8 +88,8 @@ colnames(aux_data_test_hybrid1)[auxx3] = c('age1', 'glucose1')
 hybrid_new_semi_bart = cspbart::cl_cspbart(y ~ glucose1 + age1, x1 = aux_data_train_hybrid1, x2 = x_train, ntrees = 50, nburn = 5000, npost = 2000)
 save(hybrid_new_semi_bart,file = 'results_hybrid_under_CSP_BART_pima.RData')
 load('results_hybrid_under_CSP_BART_pima.RData')
-hybridy_hat_new = cl_predict_cspbart(hybrid_new_semi_bart,aux_data_train_hybrid1,x_train,'mean')
-hybridyhat_test = cl_predict_cspbart(hybrid_new_semi_bart,aux_data_test_hybrid1,test_hybrid1,'mean')
+hybridy_hat_new = predict(hybrid_new_semi_bart,aux_data_train_hybrid1,x_train,'mean')
+hybridyhat_test = predict(hybrid_new_semi_bart,aux_data_test_hybrid1,test_hybrid1,'mean')
 
 hybridcspbart_miss_rate = missclass_rate(y_train, hybridy_hat_new) # missclassification rate (training)
 hybridcspbart_miss_rate_test = missclass_rate(y_test, hybridyhat_test) # missclassification rate (test)
@@ -111,8 +111,8 @@ x_test22 = x_test[,-which(colnames(x_test) %in% c('age', 'glucose'))]
 our_ssp_bart22 = cspbart::cl_sspbart(y ~ glucose + age, x1 = aux_data_train, x2 = x_train22, ntrees = 50, nburn = 5000, npost = 2000)
 save(our_ssp_bart22,file = 'results_our_SPP_BART_noAGEandGLUCOSEinX2_pima.RData')
 load('results_our_SPP_BART_noAGEandGLUCOSEinX2_pima.RData')
-y_hat_new_our_ssp22 = cl_predict_cspbart(our_ssp_bart22,aux_data_train,x_train22,'mean')
-yhat_test_our_ssp22 = cl_predict_cspbart(our_ssp_bart22,aux_data_test,x_test22,'mean')
+y_hat_new_our_ssp22 = predict(our_ssp_bart22,aux_data_train,x_train22,'mean')
+yhat_test_our_ssp22 = predict(our_ssp_bart22,aux_data_test,x_test22,'mean')
 
 our_sspbart_miss_rate = missclass_rate(y_train, y_hat_new_our_ssp22) # missclassification rate (training)
 our_sspbart_miss_rate_test = missclass_rate(y_test, yhat_test_our_ssp22) # missclassification rate (test)
@@ -137,11 +137,11 @@ save(save_results, file='00_misclassification_rates.RData')
 # Parameter estimates --------------------------- 
 
 # CSP-BART
-beta_hat_new = apply(new_semi_bart$beta_hat, 2, mean)
+beta_hat_new = colMeans(new_semi_bart$beta_hat)
 q5_beta_new = apply(new_semi_bart$beta_hat, 2, quantile, prob=0.05)
 q95_beta_new = apply(new_semi_bart$beta_hat, 2, quantile, prob=0.95)
 
 # SSP-BART
-beta_hat_new_ssp22 = apply(our_ssp_bart22$beta_hat, 2, mean)
+beta_hat_new_ssp22 = colMeans(our_ssp_bart22$beta_hat)
 q5_beta_new_ssp22 = apply(our_ssp_bart22$beta_hat, 2, quantile, prob=0.05)
 q95_beta_new_ssp22 = apply(our_ssp_bart22$beta_hat, 2, quantile, prob=0.95)
