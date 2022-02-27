@@ -214,23 +214,24 @@ sspbart = function(formula,
        beta_hat[,1] = beta_hat[,1] + y_mean
     }
 
-  return(list(trees = tree_store,
-              sigma2 = sigma2_store*y_sd^2,
-              y_hat = y_hat_store*y_sd + y_mean,
-              beta_hat = beta_hat,
-              bart_hat = bart_store*y_sd,
-              npost = npost,
-              nburn = nburn,
-              nthin = nthin,
-              ntrees = ntrees,
-              y_mean = y_mean,
-              y_sd = y_sd,
-              var_count_store = var_count_store,
-              s = s_prob_store,
-              formula = formula,
-              colnames.x1 = colnames_x1,
-              colnames.x2 = colnames_x2))
-
+  results <- list(trees = tree_store,
+                  sigma2 = sigma2_store*y_sd^2,
+                  y_hat = y_hat_store*y_sd + y_mean,
+                  beta_hat = beta_hat,
+                  bart_hat = bart_store*y_sd,
+                  npost = npost,
+                  nburn = nburn,
+                  nthin = nthin,
+                  ntrees = ntrees,
+                  y_mean = y_mean,
+                  y_sd = y_sd,
+                  var_count_store = var_count_store,
+                  s = s_prob_store,
+                  formula = formula,
+                  colnames.x1 = colnames_x1,
+                  colnames.x2 = colnames_x2)
+  class(results) <- "cspbart"
+    return(results)
 } # End main function
 
 
@@ -423,18 +424,19 @@ cl_sspbart = function(formula,
 
   cat('\n') # Make sure progress bar ends on a new line
 
-  return(list(trees = tree_store,
-              y_hat = y_hat_store,
-              beta_hat = beta_store,
-              bart_hat = bart_store,
-              npost = npost,
-              nburn = nburn,
-              nthin = nthin,
-              ntrees = ntrees,
-              var_count_store = var_count_store,
-              s = s_prob_store,
-              formula = formula,
-              colnames.x1 = colnames_x1,
-              colnames.x2 = colnames_x2))
-
+  results <- list(trees = tree_store,
+                  y_hat = y_hat_store,
+                  beta_hat = beta_store,
+                  bart_hat = bart_store,
+                  npost = npost,
+                  nburn = nburn,
+                  nthin = nthin,
+                  ntrees = ntrees,
+                  var_count_store = var_count_store,
+                  s = s_prob_store,
+                  formula = formula,
+                  colnames.x1 = colnames_x1,
+                  colnames.x2 = colnames_x2)
+  class(results) <- "cl_cspbart"
+    return(results)
 } # End main function

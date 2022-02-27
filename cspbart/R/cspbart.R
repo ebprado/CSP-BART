@@ -14,11 +14,34 @@
 # npost = 1000
 # nthin = 1
 
+#' Combined Semi-Parametric BART
+#'
+#' @param formula x
+#' @param x1 x
+#' @param x2 x
+#' @param sparse x
+#' @param ntrees x
+#' @param node_min_size x
+#' @param alpha x
+#' @param beta x
+#' @param nu x
+#' @param lambda x
+#' @param mu_mu x
+#' @param sigma2 x
+#' @param sigma2_mu x
+#' @param nburn x
+#' @param npost x
+#' @param nthin x
+#'
+#' @return x
 #' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'terms'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
 #' @export
+#'
+#' @examples
+#' #
 cspbart = function(formula,
                    x1, # it needs to contain the response
                    x2, # it doesn't need to contain the response
@@ -210,33 +233,55 @@ cspbart = function(formula,
        beta_hat[,1] = beta_hat[,1] + y_mean
     }
 
-  return(list(trees = tree_store,
-              sigma2 = sigma2_store*y_sd^2,
-              y_hat = y_hat_store*y_sd + y_mean,
-              beta_hat = beta_hat,
-              bart_hat = bart_store*y_sd,
-              npost = npost,
-              nburn = nburn,
-              nthin = nthin,
-              ntrees = ntrees,
-              y_mean = y_mean,
-              y_sd = y_sd,
-              var_count_store = var_count_store,
-              s = s_prob_store,
-              formula = formula,
-              colnames.x1 = colnames_x1,
-              colnames.x2 = colnames_x2))
-
+  results <- list(trees = tree_store,
+                  sigma2 = sigma2_store*y_sd^2,
+                  y_hat = y_hat_store*y_sd + y_mean,
+                  beta_hat = beta_hat,
+                  bart_hat = bart_store*y_sd,
+                  npost = npost,
+                  nburn = nburn,
+                  nthin = nthin,
+                  ntrees = ntrees,
+                  y_mean = y_mean,
+                  y_sd = y_sd,
+                  var_count_store = var_count_store,
+                  s = s_prob_store,
+                  formula = formula,
+                  colnames.x1 = colnames_x1,
+                  colnames.x2 = colnames_x2)
+  class(results) <- "cspbart"
+    return(results)
 } # End main function
 
-
+#' Combined Semi-Parametric BART for Classification
+#'
+#' @param formula x
+#' @param x1 x
+#' @param x2 x
+#' @param sparse x 
+#' @param ntrees x
+#' @param node_min_size x
+#' @param alpha x
+#' @param beta x
+#' @param nu x
+#' @param lambda x
+#' @param mu_mu x
+#' @param sigma2 x
+#' @param sigma2_mu x 
+#' @param nburn x
+#' @param npost x
+#' @param nthin x
+#' 
+#' @return x
+#'
 #' @export
 #' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'model.matrix'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
 #'
-
+#' @examples
+#' #
 cl_cspbart = function(formula,
                     x1, # it needs to contain the response
                     x2, # it doesn't need to contain the response
@@ -417,18 +462,19 @@ cl_cspbart = function(formula,
 
   cat('\n') # Make sure progress bar ends on a new line
 
-  return(list(trees = tree_store,
-              y_hat = y_hat_store,
-              beta_hat = beta_store,
-              bart_hat = bart_store,
-              npost = npost,
-              nburn = nburn,
-              nthin = nthin,
-              ntrees = ntrees,
-              var_count_store = var_count_store,
-              s = s_prob_store,
-              formula = formula,
-              colnames.x1 = colnames_x1,
-              colnames.x2 = colnames_x2))
-
+  results <- list(trees = tree_store,
+                  y_hat = y_hat_store,
+                  beta_hat = beta_store,
+                  bart_hat = bart_store,
+                  npost = npost,
+                  nburn = nburn,
+                  nthin = nthin,
+                  ntrees = ntrees,
+                  var_count_store = var_count_store,
+                  s = s_prob_store,
+                  formula = formula,
+                  colnames.x1 = colnames_x1,
+                  colnames.x2 = colnames_x2)
+  class(results) <- "cl_cspbart"
+    return(results)
 } # End main function

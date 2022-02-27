@@ -196,8 +196,8 @@ cspbart = cspbart::cspbart(BSMMAT01 ~ 1 + BSDGEDUP + BSBM42BA + BCDGDAS, x1 = da
 head(cspbart$beta_hat)
 save(cspbart,file = 'results_CSP_BART_TIMSS2019.RData')
 load('results_CSP_BART_TIMSS2019.RData')
-y_hat_test = predict_cspbart(cspbart, dat1_test, datx2_test, type = 'mean')
 colMeans(cspbart$beta_hat)
+y_hat_test = predict(cspbart, dat1_test, datx2_test, type = 'mean')
 
 auxtrees = var_used_trees(cspbart, raw = FALSE)
 auxtrees = auxtrees %>%

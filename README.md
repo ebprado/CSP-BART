@@ -45,7 +45,7 @@ yhat = colMeans(spbart.fit$y_hat)
 betahat = colMeans(spbart.fit$beta_hat)
 
 # Predict on a new dataset
-yhat_pred = predict_cspbart(cspbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
+yhat_pred = predict(cspbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
 cor(yhat,yhat_pred) == 1
 
 # Plot 
@@ -74,6 +74,6 @@ yhat = colMeans(pnorm(cspbart.fit$y_hat))
 betahat = colMeans(cspbart.fit$beta_hat)
 
 # Predict on a new dataset
-yhat_pred = cl_predict_cspbart(spbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
+yhat_pred = predict(spbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
 cor(yhat,yhat_pred) == 1
 ```

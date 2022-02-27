@@ -7,6 +7,7 @@ check()
 build()
 install_github("ebprado/CSP-BART/cspbart", ref='main')
 library(cspbart)
+?cspbart
 
 # Simulate from Friedman equation -------------------------
 friedman_data = function(n, num_cov, sd_error){
@@ -36,7 +37,7 @@ yhat = colMeans(cspbart.fit$y_hat)
 betahat = colMeans(cspbart.fit$beta_hat)
 
 # Predict on a new dataset
-yhat_pred = cspbart::predict_cspbart(cspbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
+yhat_pred = predict(cspbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
 cor(yhat,yhat_pred) == 1
 
 # Plot --------------
