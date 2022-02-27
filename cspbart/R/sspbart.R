@@ -1,5 +1,4 @@
 #' @export
-#' @importFrom mvtnorm 'rmvnorm'
 #' @importFrom MCMCpack 'rdirichlet' 'riwish'
 #' @importFrom stats 'rgamma' 'runif' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'terms'
 #' @importFrom truncnorm 'rtruncnorm'
@@ -240,7 +239,6 @@ sspbart = function(formula,
 
 
 #' @export
-#' @importFrom mvtnorm 'rmvnorm'
 #' @importFrom MCMCpack 'rdirichlet' 'riwish'
 #' @importFrom stats 'rgamma' 'runif' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'model.matrix'
 #' @importFrom truncnorm 'rtruncnorm'

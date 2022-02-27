@@ -155,16 +155,21 @@ get_tree_prior = function(tree, alpha, beta, common_vars) {
 
   }
 
-update_beta <- function(y, x, sigma2, omega_inv){
+update_beta <- function(y, x, sigma2, omega_inv) { # (1) sample from MVN(Q^{-1}b, Q^{-1})
+  
+  Q          <- crossprod(x)/sigma2 + omega_inv
+  b          <- crossprod(x, y)/sigma2
+  p          <- NCOL(Q)
+  Z          <- rnorm(p)
+  if(p == 1)  {
+    U        <- sqrt(Q)
+    drop((b/U + Z)/U)
+  } else      {
+    U        <- chol(Q)
+    backsolve(U, backsolve(U, b, transpose=TRUE, k=p) + Z, k=p)
+  }
+}
 
-  sigma_beta = solve(t(x)%*%x / sigma2 + omega_inv)
-  mu_beta = sigma_beta%*%(t(x)%*%y/sigma2)
-
-  beta_hat = rmvnorm(1,
-                     mean = mu_beta,
-                     sigma = sigma_beta)
-
-  return(t(beta_hat))
 }
 
 update_omega <- function(beta_hat, b, V, v){
