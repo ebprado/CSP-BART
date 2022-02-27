@@ -7,6 +7,7 @@ check()
 build()
 install_github("ebprado/CSP-BART/cspbart", ref='main')
 library(cspbart)
+citation("cspbart")
 ?cspbart
 
 # Simulate from Friedman equation -------------------------
