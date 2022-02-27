@@ -47,9 +47,9 @@ tree_full_conditional = function(tree, R, sigma2, sigma2_mu, common_vars) {
   S_j = tapply(R, tree$node_indices, sum)
 
   # Now calculate the log posterior
-  log_post = 0.5 * ( sum(log( sigma2 / (nj*sigma2_mu_aux + sigma2))) +
-                       sum( (sigma2_mu_aux* S_j^2) / (sigma2 * (nj*sigma2_mu_aux + sigma2))))
-  return(log_post)
+  temp <- nj * sigma2_mu_aux + sigma2
+  log_post = 0.5 * (sum(log(sigma2) - log(temp)) + sum((sigma2_mu_aux* S_j^2) / (sigma2 * temp)))
+    return(log_post)
 }
 
 simulate_mu = function(tree, R, sigma2, sigma2_mu, common_vars) {

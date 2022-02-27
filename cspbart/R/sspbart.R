@@ -1,5 +1,5 @@
 #' @export
-#' @importFrom stats 'rgamma' 'runif' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'terms'
+#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'terms'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
@@ -161,9 +161,9 @@ sspbart = function(formula,
           get_tree_prior(new_trees[[j]], alpha, beta, common_variables)
 
         # Exponentiate the results above
-        if (new_trees[[j]]$ForceStump == TRUE) {a=1} else {a = exp(l_new - l_old)}
+        if(isTRUE(new_trees[[j]]$ForceStump)) {a=1} else {a = l_new - l_old}
 
-        if(a > runif(1)) {
+        if(a > 0 || a > -rexp(1)) {
           curr_trees[[j]] = new_trees[[j]]
 
           if (type =='change'){
@@ -201,7 +201,7 @@ sspbart = function(formula,
     sigma2 = update_sigma2(sum_of_squares, n = length(y_scale), nu, lambda)
 
     # Update s = (s_1, ..., s_p), where s_p is the probability that predictor p is used to create new terminal nodes
-    if (sparse == 'TRUE' & i > floor(TotIter*0.1)){
+    if(isTRUE(sparse) & i > floor(TotIter*0.1)){
       s = update_s(var_count, p, 1)
     }
   } # End iterations loop
@@ -235,7 +235,7 @@ sspbart = function(formula,
 
 
 #' @export
-#' @importFrom stats 'rgamma' 'runif' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'model.matrix'
+#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'model.matrix'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
@@ -378,9 +378,9 @@ cl_sspbart = function(formula,
         get_tree_prior(new_trees[[j]], alpha, beta, common_variables)
 
       # Exponentiate the results above
-      if (new_trees[[j]]$ForceStump == TRUE) {a=1} else {a = exp(l_new - l_old)}
+      if(isTRUE(new_trees[[j]]$ForceStump)) {a=1} else {a = l_new - l_old}
 
-      if(a > runif(1)) {
+      if(a > 0 || a > -rexp(1)) {
         curr_trees[[j]] = new_trees[[j]]
 
         if (type =='change'){
@@ -416,7 +416,7 @@ cl_sspbart = function(formula,
     z = update_z(y, y_hat)
 
     # Update s = (s_1, ..., s_p), where s_p is the probability that predictor p is used to create new terminal nodes
-    if (sparse == 'TRUE' & i > floor(TotIter*0.1)){
+    if(isTRUE(sparse) & i > floor(TotIter*0.1)){
       s = update_s(var_count, p, 1)
     }
   } # End iterations loop
