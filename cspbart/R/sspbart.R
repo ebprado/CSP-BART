@@ -1,5 +1,5 @@
 #' @export
-#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'terms'
+#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'terms'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
@@ -235,7 +235,7 @@ sspbart = function(formula,
 
 
 #' @export
-#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'model.matrix'
+#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'model.matrix'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'

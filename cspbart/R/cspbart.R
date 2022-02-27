@@ -1,10 +1,3 @@
-#' @export
-#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'terms'
-#' @importFrom truncnorm 'rtruncnorm'
-#' @importFrom lme4 'lFormula'
-#' @importFrom dbarts 'makeModelMatrixFromDataFrame'
-#'
-
 # x1 = X1 # it needs to contain the response
 # x2 = X2# it doesn't need to contain the response
 # sparse = FALSE
@@ -21,6 +14,11 @@
 # npost = 1000
 # nthin = 1
 
+#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'terms'
+#' @importFrom truncnorm 'rtruncnorm'
+#' @importFrom lme4 'lFormula'
+#' @importFrom dbarts 'makeModelMatrixFromDataFrame'
+#' @export
 cspbart = function(formula,
                    x1, # it needs to contain the response
                    x2, # it doesn't need to contain the response
@@ -233,7 +231,7 @@ cspbart = function(formula,
 
 
 #' @export
-#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rnorm' 'pnorm' 'tapply' 'as.formula' 'model.matrix'
+#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'model.matrix'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'

@@ -14,7 +14,7 @@ library(cspbart)
 rm(list = ls())
 
 # ---------------------------------
-# SP-BART for a continuous response
+# CSP-BART for a continuous response
 # ---------------------------------
 
 # Simulate from Friedman equation
@@ -41,8 +41,8 @@ cspbart.fit = cspbart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2, ntrees = 10, 
 # cspbart.fit = cspbart(formula = y ~ V4 + V5, x1 = X1, x2 = X2, ntrees = 10, nburn = 2000, npost = 1000)
 
 # Calculate the predicted values (yhat) and parameter estimates (betahat)
-yhat = apply(spbart.fit$y_hat,2,mean)
-betahat = apply(spbart.fit$beta_hat,2,mean)
+yhat = colMeans(spbart.fit$y_hat)
+betahat = colMeans(spbart.fit$beta_hat)
 
 # Predict on a new dataset
 yhat_pred = predict_cspbart(cspbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')
@@ -54,7 +54,7 @@ plot(1:2, c(10,5), main = 'True versus estimates', ylim=c(3,12))
 points(1:2, betahat, col=2, pch=2)
 
 # -----------------------------
-# SP-BART for a binary response
+# CSP-BART for a binary response
 # -----------------------------
 n = 200
 ncov = 5
@@ -70,8 +70,8 @@ X2 = data$x # all covariates
 cspbart.fit = cspbart::cl_cspbart(formula = y ~ V4 + V5, x1 = X1, x2 = X2, ntrees = 1, nburn = 2000, npost = 1000)
 
 # Calculate the predicted values (yhat) and parameter estimates (betahat)
-yhat = apply(pnorm(cspbart.fit$y_hat),2,mean)
-betahat = apply(cspbart.fit$beta_hat,2,mean)
+yhat = colMeans(pnorm(cspbart.fit$y_hat))
+betahat = colMeans(cspbart.fit$beta_hat)
 
 # Predict on a new dataset
 yhat_pred = cl_predict_cspbart(spbart.fit, newdata_x1 = X1, newdata_x2 = X2, type = 'mean')

@@ -44,7 +44,7 @@ plot(y, yhat);abline(0,1)
 plot(1:2, c(10,5), main = 'True versus estimates', ylim=c(3,12))
 points(1:2, betahat, col=2, pch=2)
 
-## SP-BART for a binary response --------------
+## CSP-BART for a binary response --------------
 n = 200
 ncov = 5
 var = 1
@@ -61,5 +61,3 @@ cspbart.fit = cspbart::cl_cspbart(formula = y ~ V4 + V5, x1 = X1, x2 = X2, ntree
 # Calculate the predicted values (yhat) and parameter estimates (betahat) ------
 yhat = pnorm(colMeans(cspbart.fit$y_hat))
 betahat = colMeans(cspbart.fit$beta_hat)
-
-

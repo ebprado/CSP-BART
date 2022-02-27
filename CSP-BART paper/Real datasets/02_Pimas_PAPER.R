@@ -25,7 +25,7 @@ data(PimaIndiansDiabetes2)
 d <- na.omit(PimaIndiansDiabetes2)
 data = as.data.frame(dbarts::makeModelMatrixFromDataFrame(d))
 
-for(i in 1:(ncol(d) - 1)){
+for(i in seq_len((ncol(d) - 1))){
   plot(d[,i], d[,'diabetes'], main=colnames(d)[i])  
 }
 
@@ -137,11 +137,11 @@ save(save_results, file='00_misclassification_rates.RData')
 # Parameter estimates --------------------------- 
 
 # CSP-BART
-beta_hat_new = apply(new_semi_bart$beta_hat, 2, mean)
+beta_hat_new = colMeans(new_semi_bart$beta_hat)
 q5_beta_new = apply(new_semi_bart$beta_hat, 2, quantile, prob=0.05)
 q95_beta_new = apply(new_semi_bart$beta_hat, 2, quantile, prob=0.95)
 
 # SSP-BART
-beta_hat_new_ssp22 = apply(our_ssp_bart22$beta_hat, 2, mean)
+beta_hat_new_ssp22 = colMeans(our_ssp_bart22$beta_hat)
 q5_beta_new_ssp22 = apply(our_ssp_bart22$beta_hat, 2, quantile, prob=0.05)
 q95_beta_new_ssp22 = apply(our_ssp_bart22$beta_hat, 2, quantile, prob=0.95)

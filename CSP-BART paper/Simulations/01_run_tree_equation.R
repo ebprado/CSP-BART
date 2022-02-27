@@ -15,8 +15,8 @@ all.comb = expand.grid(n=list_n, var=list_var, ncov = list_ncov) # create all sc
 seed = 0
 save.path = "~/R/semiBART/results/"
 
-for (i in 1:10){ # Number of Monte Carlo repetitions
-  for (j in 1:nrow(all.comb)){
+for (i in seq_len(10)){ # Number of Monte Carlo repetitions
+  for (j in seq_len(nrow(all.comb))){
     
     seed = seed + 1
     n = all.comb[j,'n']
