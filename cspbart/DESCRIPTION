@@ -1,13 +1,13 @@
 Package: cspbart
 Type: Package
-Title: Bayesian Additive Regression Trees fully in R
+Title: Semi-Parametric Bayesian Additive Regression Trees fully in R
 Version: 0.1.0
-Author@E: person('Estevão', 'B. Prado', email = 'estevao.prado@hotmail.com', role=c('aut', 'cre'))
+Authors@R: c(person('Estevão', 'B. Prado', email = 'estevao.prado@hotmail.com', role=c('aut', 'cre'), comment = c(ORCID = "0000-0003-2320-085X")),
+             person("Keefe", "Murphy", email = "keefe.murphy@mu.ie", role = c('ctb'), comment = c(ORCID = "0000-0002-7709-3159")))
 Description: This package performs Bayesian Additive Regression Trees.
-Author: Estevão B. Prado [aut, cre]
 Maintainer: Estevão B. Prado <estevao.prado@hotmail.com>
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
-Imports: MASS, mvtnorm, statmod, stats, MCMCpack, truncnorm, lme4, dbarts
-RoxygenNote: 7.1.1
+Imports: statmod, stats, truncnorm, lme4, dbarts
+RoxygenNote: 7.1.2

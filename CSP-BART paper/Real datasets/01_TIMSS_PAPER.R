@@ -91,7 +91,7 @@ cspbart = cspbart::cspbart(BSMMAT01 ~ 1 + BCDGDAS, x1 = data, x2, ntrees = 50, n
 apply(cspbart$beta_hat,2,quantile, probs=0.05)
 apply(cspbart$beta_hat,2,quantile, probs=0.95)
 apply(cspbart$beta_hat,2,quantile, probs=0.5)
-apply(cspbart$beta_hat,2,mean)
+colMeans(cspbart$beta_hat)
 hist(cspbart$beta_hat[,2])
 save(cspbart,file = 'results_causal_double_BART_TIMSS2019.RData')
 load('results_causal_double_BART_TIMSS2019.RData')
@@ -107,13 +107,13 @@ bcf = bcf(y = data$BSMMAT01, z = data$BCDGDAS, x_control = data2, x_moderate = d
 save(bcf,file = 'results_bcf_TIMSS2019.RData')
 load('results_bcf_TIMSS2019.RData')
 
-# mean(apply(bcf$tau,2,mean)[data$BCDGDAS==1])
-# mean(apply(bcf$tau,2,mean)[data$BCDGDAS==0])
-mean(apply(bcf$tau,2,mean))
+# mean(colMeans(bcf$tau)[data$BCDGDAS==1])
+# mean(colMeans(bcf$tau)[data$BCDGDAS==0])
+mean(colMeans(bcf$tau))
 mean(apply(bcf$tau,2,quantile, probs=c(0.025)))
 mean(apply(bcf$tau,2,quantile, probs=c(0.5)))
 mean(apply(bcf$tau,2,quantile, probs=c(0.975)))
-hist(apply(bcf$tau,2,mean))
+hist(colMeans(bcf$tau))
 
 ### plot -----------------------------------------
 
@@ -196,8 +196,8 @@ cspbart = cspbart::cspbart(BSMMAT01 ~ 1 + BSDGEDUP + BSBM42BA + BCDGDAS, x1 = da
 head(cspbart$beta_hat)
 save(cspbart,file = 'results_CSP_BART_TIMSS2019.RData')
 load('results_CSP_BART_TIMSS2019.RData')
-apply(cspbart$beta_hat, 2, mean)
-y_hat_test = predict_cspbart(cspbart, dat1_test, datx2_test, type = 'mean')
+colMeans(cspbart$beta_hat)
+y_hat_test = predict(cspbart, dat1_test, datx2_test, type = 'mean')
 
 auxtrees = var_used_trees(cspbart, raw = FALSE)
 auxtrees = auxtrees %>%
