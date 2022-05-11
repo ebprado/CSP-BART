@@ -237,6 +237,7 @@ cspbart = function(formula,
                   sigma2 = sigma2_store*y_sd^2,
                   y_hat = y_hat_store*y_sd + y_mean,
                   beta_hat = beta_hat,
+                  cov_mat_beta_hat = Omega_inv,
                   bart_hat = bart_store*y_sd,
                   npost = npost,
                   nburn = nburn,
@@ -258,7 +259,7 @@ cspbart = function(formula,
 #' @param formula x
 #' @param x1 x
 #' @param x2 x
-#' @param sparse x 
+#' @param sparse x
 #' @param ntrees x
 #' @param node_min_size x
 #' @param alpha x
@@ -267,11 +268,11 @@ cspbart = function(formula,
 #' @param lambda x
 #' @param mu_mu x
 #' @param sigma2 x
-#' @param sigma2_mu x 
+#' @param sigma2_mu x
 #' @param nburn x
 #' @param npost x
 #' @param nthin x
-#' 
+#'
 #' @return x
 #'
 #' @export
@@ -382,7 +383,7 @@ cl_cspbart = function(formula,
 
     # Update covariance matrix of the linear predictor
     Omega_inv = update_omega_inv(beta_hat, V, v1)
-    
+
     # Start looping through trees
     for (j in seq_len(ntrees)) {
 

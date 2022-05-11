@@ -126,7 +126,7 @@ sspbart = function(formula,
 
     # Update covariance matrix of the linear predictor
     # Omega_inv = update_omega_inv(beta_hat, V, v1)
-    
+
       # Start looping through trees
       for (j in seq_len(ntrees)) {
 
@@ -218,6 +218,7 @@ sspbart = function(formula,
                   sigma2 = sigma2_store*y_sd^2,
                   y_hat = y_hat_store*y_sd + y_mean,
                   beta_hat = beta_hat,
+                  cov_mat_beta_hat = Omega_inv,
                   bart_hat = bart_store*y_sd,
                   npost = npost,
                   nburn = nburn,
