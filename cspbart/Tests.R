@@ -30,8 +30,11 @@ X2 = data$x # all covariates
 # Run the semi-parametric BART (WITHOUT intercept)--------------
 
 cspbart.fit = cspbart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2, ntrees = 50, nburn = 200, npost = 100)
-sspbart.fit = cspbart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2[-c(3,4)], ntrees = 50, nburn = 200, npost = 100)
-
+sspbart.fit = sspbart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2[,-c(3,4)], ntrees = 50, nburn = 200, npost = 100)
+hist(cspbart.fit$beta_hat[,1])
+hist(sspbart.fit$beta_hat[,1])
+sspbart.fit$cov_mat_beta_hat
+cspbart.fit$cov_mat_beta_hat
 # Run the semi-parametric BART (WITH intercept)--------------
 # cspbart.fit = cspbart::cspbart(formula = y ~ V4 + V5, sparse = TRUE, x1 = X1, x2 = X2, ntrees = 1, nburn = 2000, npost = 1000)
 
