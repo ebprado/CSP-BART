@@ -190,8 +190,7 @@ cspbart = function(formula,
 
         # Exponentiate the results above
         if(isTRUE(new_trees[[j]]$ForceStump)) {a=1} else {a = l_new - l_old}
-        if(type == 'grow') {a = 1}
-        # if(type == 'prune') {a = -10}
+
         if(a > 0 || a > -rexp(1)) {
           curr_trees[[j]] = new_trees[[j]]
 

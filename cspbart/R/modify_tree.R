@@ -131,7 +131,7 @@ grow_tree = function(X, y, curr_tree, node_min_size, s, common_vars, aux_factor_
     # Choose a split variable uniformly from all columns (the first one is the intercept)
     terminal_ancestors = get_ancestors(curr_tree) # get the ancestor for all terminal nodes
     split_variable = sample(1:ncol(X), 1, prob = s)
-    node_ancestors = c(split_variable, terminal_ancestors[terminal_ancestors[,1] == node_to_split,2]) # covariates used in the splitting rules of the ancestor nodes + new_variable
+    node_ancestors = unique(c(split_variable, terminal_ancestors[terminal_ancestors[,1] == node_to_split,2])) # covariates used in the splitting rules of the ancestor nodes + new_variable
     check_validity_new_tree = !any(unlist(lapply(aux_factor_var, function(x) all(node_ancestors %in% x)))) # check whether the new structure is valid
 
     if(check_validity_new_tree == FALSE && length(node_ancestors) == 1) {check_validity_new_tree = TRUE}
