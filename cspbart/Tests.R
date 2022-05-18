@@ -20,16 +20,29 @@ friedman_data = function(n, num_cov, sd_error){
 
 n = 200
 ncov = 5
-var = 1
+var = 50
 data = friedman_data(n, ncov, sqrt(var))
 
 y = data$y # response variable
 X1 = as.data.frame(cbind(y,data$x)) # all covariates + the response
-X2 = data$x # all covariates
+X2 = as.data.frame(data$x) # all covariates
+X2$V6 = rep(letters[1:5],each=40)
+X1$V6 = rep(letters[1:5],each=40)
+# X2$V7 = rep(letters[1:5],each=40)
+# X1$V7 = rep(letters[1:5],each=40)
 
 # Run the semi-parametric BART (WITHOUT intercept)--------------
+# set.seed(002)
+cspbart.fit = cspbart(formula = y ~ 0 + V6, x1 = X1, x2 = X2[,c(5,6), drop=FALSE],
+                      ntrees = 1, nburn = 100, npost = 10,
+                      alpha = 0.99, beta = 0.01)
 
-cspbart.fit = cspbart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2, ntrees = 50, nburn = 200, npost = 100)
+aa = var_used_trees(cspbart.fit, raw = FALSE)
+
+cspbart.fit$trees[[10]][[1]]$tree_matrix
+# tree_example = cspbart.fit$trees[[10]][[1]]
+# save(tree_example, file = 'tree_example.RData')
+# cspbart.fit = cspbart(formula = y ~ 0 + V4 + V5 + V6, x1 = X1, x2 = X2, ntrees = 50, nburn = 200, npost = 100)
 #sspbart.fit = sspbart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2[,-c(3,4)], ntrees = 50, nburn = 200, npost = 100)
 # hist(cspbart.fit$beta_hat[,1])
 # hist(sspbart.fit$beta_hat[,1])
@@ -38,6 +51,7 @@ cspbart.fit = cspbart(formula = y ~ 0 + V4 + V5, x1 = X1, x2 = X2, ntrees = 50, 
 # Run the semi-parametric BART (WITH intercept)--------------
 # cspbart.fit = cspbart::cspbart(formula = y ~ V4 + V5, sparse = TRUE, x1 = X1, x2 = X2, ntrees = 1, nburn = 2000, npost = 1000)
 
+testa = var_used_trees(cspbart.fit, raw = TRUE)
 # Calculate the predicted values (yhat) and parameter estimates (betahat) ------
 yhat = colMeans(cspbart.fit$y_hat)
 betahat = colMeans(cspbart.fit$beta_hat)

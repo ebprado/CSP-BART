@@ -1,10 +1,3 @@
-#' @export
-#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'terms'
-#' @importFrom truncnorm 'rtruncnorm'
-#' @importFrom lme4 'lFormula'
-#' @importFrom dbarts 'makeModelMatrixFromDataFrame'
-#'
-
 # x1 = X1 # it needs to contain the response
 # x2 = X2# it doesn't need to contain the response
 # sparse = FALSE
@@ -21,7 +14,35 @@
 # npost = 1000
 # nthin = 1
 
-sspbart = function(formula,
+#' Combined Semi-Parametric BART
+#'
+#' @param formula x
+#' @param x1 x
+#' @param x2 x
+#' @param sparse x
+#' @param ntrees x
+#' @param node_min_size x
+#' @param alpha x
+#' @param beta x
+#' @param nu x
+#' @param lambda x
+#' @param mu_mu x
+#' @param sigma2 x
+#' @param sigma2_mu x
+#' @param nburn x
+#' @param npost x
+#' @param nthin x
+#'
+#' @return x
+#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'terms'
+#' @importFrom truncnorm 'rtruncnorm'
+#' @importFrom lme4 'lFormula'
+#' @importFrom dbarts 'makeModelMatrixFromDataFrame'
+#' @export
+#'
+#' @examples
+#' #
+cspbart = function(formula,
                    x1, # it needs to contain the response
                    x2, # it doesn't need to contain the response
                    sparse = FALSE,
@@ -49,8 +70,7 @@ sspbart = function(formula,
   colnames_x1 = colnames(x1)
   colnames_x2 = colnames(x2)
 
-  # common_variables = which(colnames_x2%in%colnames_x1)
-  common_variables = NULL
+  common_variables = which(colnames_x2%in%colnames_x1)
 
   # Extract control parameters
   node_min_size = node_min_size
@@ -80,8 +100,7 @@ sspbart = function(formula,
   p2 = ncol(x2)
   p = p1 + p2
   s = rep(1/p2, p2)
-  sigma2_b = 10000
-  Omega_inv = diag(1/sigma2_b, p1)
+  Omega_inv = diag(p1)
   b = rep(0, p1)
   V = diag(p1)
   v1 = p1 + 1
@@ -125,7 +144,7 @@ sspbart = function(formula,
     yhat_linear = x1%*%beta_hat
 
     # Update covariance matrix of the linear predictor
-    # Omega_inv = update_omega_inv(beta_hat, V, v1)
+    Omega_inv = update_omega_inv(beta_hat, V, v1)
 
       # Start looping through trees
       for (j in seq_len(ntrees)) {
@@ -235,15 +254,36 @@ sspbart = function(formula,
     return(results)
 } # End main function
 
-
+#' Combined Semi-Parametric BART for Classification
+#'
+#' @param formula x
+#' @param x1 x
+#' @param x2 x
+#' @param sparse x
+#' @param ntrees x
+#' @param node_min_size x
+#' @param alpha x
+#' @param beta x
+#' @param nu x
+#' @param lambda x
+#' @param mu_mu x
+#' @param sigma2 x
+#' @param sigma2_mu x
+#' @param nburn x
+#' @param npost x
+#' @param nthin x
+#'
+#' @return x
+#'
 #' @export
 #' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'model.matrix'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
 #'
-
-cl_sspbart = function(formula,
+#' @examples
+#' #
+cl_cspbart = function(formula,
                     x1, # it needs to contain the response
                     x2, # it doesn't need to contain the response
                     sparse = FALSE,
@@ -272,8 +312,7 @@ cl_sspbart = function(formula,
   colnames_x1 = colnames(x1)
   colnames_x2 = colnames(x2)
 
-  # common_variables = which(colnames_x2%in%colnames_x1)
-  common_variables = NULL
+  common_variables = which(colnames_x2%in%colnames_x1)
 
   # Extract control parameters
   node_min_size = node_min_size
@@ -300,11 +339,10 @@ cl_sspbart = function(formula,
   p2 = ncol(x2)
   p = p1 + p2
   s = rep(1/p2, p2)
-  sigma2_b = 10000
-  Omega_inv = diag(1/sigma2_b, p1)
+  Omega_inv = diag(p1)
   b = rep(0, p1)
   V = diag(p1)
-  v = p1 + 1
+  v1 = p1 + 1
   beta_hat = rep(0, p1)
   z = ifelse(y == 0, -3, 3)
 
@@ -344,7 +382,7 @@ cl_sspbart = function(formula,
     yhat_linear = x1%*%beta_hat
 
     # Update covariance matrix of the linear predictor
-    # Omega_inv = update_omega(beta_hat, V, v1)
+    Omega_inv = update_omega_inv(beta_hat, V, v1)
 
     # Start looping through trees
     for (j in seq_len(ntrees)) {
@@ -428,7 +466,6 @@ cl_sspbart = function(formula,
   results <- list(trees = tree_store,
                   y_hat = y_hat_store,
                   beta_hat = beta_store,
-                  cov_mat_beta_hat = Omega_inv,
                   bart_hat = bart_store,
                   npost = npost,
                   nburn = nburn,

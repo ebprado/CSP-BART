@@ -75,16 +75,15 @@ update_tree = function(y, # Target variable
                        curr_tree,         # The current set of trees (not required if type is stump)
                        node_min_size,     # The minimum size of a node to grow
                        s,                 # probability vector to be used during the growing process
-                       common_vars,       # common variables between the subsets x1 and x2
-                       aux_factor_var)    # identify factor variables and
+                       common_vars)       # common variables between the subsets x1 and x2
   {
 
   # Call the appropriate function to get the new tree
 
     new_tree = switch(type,
-                      grow = grow_tree(X, y, curr_tree, node_min_size, s, common_vars, aux_factor_var),
+                      grow = grow_tree(X, y, curr_tree, node_min_size, s, common_vars),
                       prune = prune_tree(X, y, curr_tree),
-                      change = change_tree(X, y, curr_tree, node_min_size, common_vars, aux_factor_var))
+                      change = change_tree(X, y, curr_tree, node_min_size, common_vars))
 
       vars_tree = new_tree$tree_matrix[,'split_variable'] # get the split variables
       vars_tree_no_NAs = unique(vars_tree[!is.na(vars_tree)]) # remove the NAs
@@ -101,7 +100,7 @@ update_tree = function(y, # Target variable
 
 # Grow_tree function ------------------------------------------------------
 
-grow_tree = function(X, y, curr_tree, node_min_size, s, common_vars, aux_factor_var) {
+grow_tree = function(X, y, curr_tree, node_min_size, s, common_vars) {
 
   available_values = NULL
   max_bad_trees = 10
@@ -129,12 +128,7 @@ grow_tree = function(X, y, curr_tree, node_min_size, s, common_vars, aux_factor_
                            prob = as.integer(terminal_node_size > node_min_size)) # Choose which node to split, set prob to zero for any nodes that are too small
 
     # Choose a split variable uniformly from all columns (the first one is the intercept)
-    terminal_ancestors = get_ancestors(curr_tree) # get the ancestor for all terminal nodes
     split_variable = sample(1:ncol(X), 1, prob = s)
-    node_ancestors = c(split_variable, terminal_ancestors[terminal_ancestors[,1] == node_to_split,2]) # covariates used in the splitting rules of the ancestor nodes + new_variable
-    check_validity_new_tree = !any(unlist(lapply(aux_factor_var, function(x) all(node_ancestors %in% x)))) # check whether the new structure is valid
-
-    if(check_validity_new_tree == FALSE && length(node_ancestors) == 1) {check_validity_new_tree = TRUE}
 
     # Alternatively follow BARTMachine and choose a split value using sample on the internal values of the available
     available_values = sort(unique(X[new_tree$node_indices == node_to_split,
@@ -150,7 +144,7 @@ grow_tree = function(X, y, curr_tree, node_min_size, s, common_vars, aux_factor_
     }
 
     curr_parent = new_tree$tree_matrix[node_to_split, 'parent'] # Make sure to keep the current parent in there. Will be NA if at the root node
-    new_tree$tree_matrix[node_to_split,1:6] = c(0, # Now not terminal
+    new_tree$tree_matrix[node_to_split,1:6] = c(0, # Now not temrinal
                                                 nrow(new_tree$tree_matrix) - 1, # child_left is penultimate row
                                                 nrow(new_tree$tree_matrix),  # child_right is penultimate row
                                                 curr_parent,
@@ -168,14 +162,14 @@ grow_tree = function(X, y, curr_tree, node_min_size, s, common_vars, aux_factor_
     new_tree$var = split_variable
 
     # Check for bad tree
-    if(any(as.numeric(new_tree$tree_matrix[,'node_size']) <= node_min_size) || check_validity_new_tree == FALSE) {
+    if(any(as.numeric(new_tree$tree_matrix[,'node_size']) <= node_min_size)) {
       count_bad_trees = count_bad_trees + 1
     } else {
       # Check whether the split variable is common to x1
-      if (split_variable %in% common_vars && length(node_ancestors) == 1){ # double grow if the tree is a stump and if the split variable at the top of the tree is common x1 and x2
+      if (split_variable %in% common_vars && all(s>0)){
         s_aux = s
-        s_aux[aux_factor_var[[split_variable]]] = 0 # set zero to the probability of the split variable that was just added in the tree, which is common to x1
-        new_tree_double_grow = grow_tree(X, y, new_tree, node_min_size, s_aux, common_vars, aux_factor_var)
+        s_aux[split_variable] = 0 # set zero to the probability of the split variable that was just added in the tree, which is common to x1
+        new_tree_double_grow = grow_tree(X, y, new_tree, node_min_size, s_aux, common_vars)
         new_tree_double_grow$var[2] = new_tree$var
         # save = new_tree$var
         new_tree_double_grow$ForceStump = FALSE
@@ -289,7 +283,7 @@ prune_tree = function(X, y, curr_tree) {
 
 # change_tree function ----------------------------------------------------
 
-change_tree = function(X, y, curr_tree, node_min_size, common_vars, aux_factor_var) {
+change_tree = function(X, y, curr_tree, node_min_size, common_vars) {
 
   # Change a node means change out the split value and split variable of an internal node. Need to make sure that this does now produce a bad tree (i.e. zero terminal nodes)
 
@@ -302,13 +296,10 @@ change_tree = function(X, y, curr_tree, node_min_size, common_vars, aux_factor_v
   # Create a holder for the new tree
   new_tree = curr_tree
 
-  # Select internal nodes which are parent of two terminals
-  # internal_nodes = which(as.numeric(new_tree$tree_matrix[,'terminal']) == 0)
+  # Need to get the internal nodes
+  internal_nodes = which(as.numeric(new_tree$tree_matrix[,'terminal']) == 0)
   terminal_nodes = which(as.numeric(new_tree$tree_matrix[,'terminal']) == 1)
-  internal_parent_of_terminals = table(new_tree$tree_matrix[terminal_nodes,'parent'])
-  internal_parent_of_two_terminals = which(internal_parent_of_terminals > 1)
-  internal_nodes = as.numeric(names(internal_parent_of_terminals[internal_parent_of_two_terminals]))
-  
+
   # Create a while loop to get good trees
   # Create a counter to stop after a certain number of bad trees
   max_bad_trees = 2
@@ -320,18 +311,7 @@ change_tree = function(X, y, curr_tree, node_min_size, common_vars, aux_factor_v
 
     # choose an internal node to change
     node_to_change = sample(internal_nodes, 1)
-    
-    # get the ancestors for internal nodes
-    save_ancestor = get_ancestors_internal(new_tree)
-    aux_internals_below_above = xtabs(split_var ~ internal + parent, save_ancestor)
-    index_internals_above = which(rownames(aux_internals_below_above)==node_to_change)
-    index_internals_below = which(colnames(aux_internals_below_above)==node_to_change)
-    
-    store_internal_above = colnames(aux_internals_below_above)[which(aux_internals_below_above[index_internals_above,] != 0)]
-    store_internal_below = rownames(aux_internals_below_above)[which(aux_internals_below_above[,index_internals_below] != 0)]
-    internal_nodes_above_below = as.numeric(c(store_internal_above, store_internal_below))
-    split_vars_internal_nodes_above_below = unique(new_tree$tree_matrix[internal_nodes_above_below, 'split_variable'])
-    
+
     # Get the covariate that will be changed
     var_changed_node = as.numeric(new_tree$tree_matrix[node_to_change, 'split_variable'])
 
@@ -347,11 +327,6 @@ change_tree = function(X, y, curr_tree, node_min_size, common_vars, aux_factor_v
     available_values = NULL
 
     new_split_variable = sample(1:ncol(X), 1)
-
-    node_ancestors = unique(c(new_split_variable, split_vars_internal_nodes_above_below)) # covariates used in the splitting rules of the ancestor nodes + new_variable
-    check_validity_new_tree = !any(unlist(lapply(aux_factor_var, function(x) all(node_ancestors %in% x)))) # check whether the new structure is valid
-
-    if(check_validity_new_tree == FALSE && length(node_ancestors) == 1) {check_validity_new_tree = TRUE}
 
     available_values = sort(unique(X[use_node_indices,
                                      new_split_variable]))
@@ -379,11 +354,8 @@ change_tree = function(X, y, curr_tree, node_min_size, common_vars, aux_factor_v
     new_tree$var = c(new_split_variable, var_changed_node)
 
     # Check for bad tree
-    node_side_aux = new_tree$tree_matrix[terminal_nodes, 'node_size']
-    split_var_aux1 = new_tree$tree_matrix[1,'split_variable'] # for trees with 2 terminal nodes only
-
-    if(any(as.numeric(node_side_aux) <= node_min_size) ||
-       (nrow(new_tree$tree_matrix) == 3 && split_var_aux1 %in% common_vars) || check_validity_new_tree == FALSE) {
+    if(any(as.numeric(new_tree$tree_matrix[terminal_nodes, 'node_size']) <= node_min_size) ||
+       (nrow(new_tree$tree_matrix) == 3 && new_tree$tree_matrix[1,'split_variable'] %in% common_vars)) {
       count_bad_trees = count_bad_trees + 1
     } else {
       bad_trees = FALSE

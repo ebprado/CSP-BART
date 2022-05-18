@@ -304,36 +304,3 @@ get_ancestors = function(tree){
 
   return(save_ancestor)
 }
-
-get_ancestors_internal = function(tree){
-  save_ancestor = NULL
-  tree = tree$tree_matrix
-  which_internal = which(tree[,'terminal'] == 0)
-  
-  
-  if(nrow(tree) == 1) {
-    save_ancestor = cbind(internal = NULL,
-                          ancestor = NULL)
-  } else {
-    for (k in length(which_internal):1) {
-      internal_node = which_internal[k]
-      parent = tree[internal_node, 'parent']
-      get_split_var = tree[internal_node, 'split_variable']
-      
-      save_ancestor = rbind(save_ancestor,
-                            cbind(internal = internal_node,
-                                  parent   = parent,
-                                  split_var = get_split_var))
-      while (is.na(parent) == FALSE && parent > 0) {
-        get_split_var = tree[parent, 'split_variable']
-        parent = tree[parent, 'parent']
-        save_ancestor = rbind(save_ancestor,
-                              cbind(internal = internal_node,
-                                    parent   = parent,
-                                    split_var = get_split_var))
-      }
-    }
-  }
-  return(save_ancestor[,,drop=FALSE])
-  
-}

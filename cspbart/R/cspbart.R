@@ -1,19 +1,3 @@
-# x1 = X1 # it needs to contain the response
-# x2 = X2# it doesn't need to contain the response
-# sparse = FALSE
-# ntrees = 10
-# node_min_size = 5
-# alpha = 0.95
-# beta = 2
-# nu = 3
-# lambda = 0.1
-# mu_mu = 0
-# sigma2 = 1
-# sigma2_mu = 1
-# nburn = 1000
-# npost = 1000
-# nthin = 1
-
 #' Combined Semi-Parametric BART
 #'
 #' @param formula x
@@ -34,7 +18,7 @@
 #' @param nthin x
 #'
 #' @return x
-#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'terms'
+#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'terms' 'xtabs'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
@@ -42,6 +26,20 @@
 #'
 #' @examples
 #' #
+#'
+# sparse = FALSE
+# ntrees = 50
+# node_min_size = 5
+# alpha = 0.95
+# beta = 2
+# nu = 3
+# lambda = 0.1
+# mu_mu = 0
+# sigma2 = 1
+# sigma2_mu = 1
+# nburn = 100
+# npost = 100
+# nthin = 1
 cspbart = function(formula,
                    x1, # it needs to contain the response
                    x2, # it doesn't need to contain the response
@@ -71,6 +69,14 @@ cspbart = function(formula,
   colnames_x2 = colnames(x2)
 
   common_variables = which(colnames_x2%in%colnames_x1)
+  common_variables_orig_name = gsub('\\..*', '',colnames_x2)
+  aux_identify_factor_variables = list()
+
+  for (jj in 1:length(colnames_x2)){
+    sampled_var_name = colnames_x2[jj]
+    sampled_var_orig_name = gsub('\\..*', '', sampled_var_name)
+    aux_identify_factor_variables[[jj]] = which(common_variables_orig_name %in% sampled_var_orig_name)
+  }
 
   # Extract control parameters
   node_min_size = node_min_size
@@ -161,14 +167,16 @@ cspbart = function(formula,
                                      curr_tree = curr_trees[[j]],
                                      node_min_size = node_min_size,
                                      s = s,
-                                     common_vars = common_variables)
+                                     common_vars = common_variables,
+                                     aux_factor_var = aux_identify_factor_variables)
 
         # CURRENT TREE: compute the log of the marginalised likelihood + log of the tree prior
         l_old = tree_full_conditional(curr_trees[[j]],
                                       current_partial_residuals,
                                       sigma2,
                                       sigma2_mu,
-                                      common_variables) +
+                                      common_variables,
+                                      aux_identify_factor_variables) +
           get_tree_prior(curr_trees[[j]], alpha, beta, common_variables)
 
         # NEW TREE: compute the log of the marginalised likelihood + log of the tree prior
@@ -176,12 +184,14 @@ cspbart = function(formula,
                                       current_partial_residuals,
                                       sigma2,
                                       sigma2_mu,
-                                      common_variables) +
+                                      common_variables,
+                                      aux_identify_factor_variables) +
           get_tree_prior(new_trees[[j]], alpha, beta, common_variables)
 
         # Exponentiate the results above
         if(isTRUE(new_trees[[j]]$ForceStump)) {a=1} else {a = l_new - l_old}
-
+        if(type == 'grow') {a = 1}
+        # if(type == 'prune') {a = -10}
         if(a > 0 || a > -rexp(1)) {
           curr_trees[[j]] = new_trees[[j]]
 
@@ -202,7 +212,8 @@ cspbart = function(formula,
                                       current_partial_residuals,
                                       sigma2,
                                       sigma2_mu,
-                                      common_variables)
+                                      common_variables,
+                                      aux_identify_factor_variables)
       # Updating BART predictions
       current_fit = get_predictions(curr_trees[j], x2, single_tree = TRUE)
       yhat_bart = yhat_bart - tree_fits_store[,j] # subtract the old fit
@@ -301,18 +312,25 @@ cl_cspbart = function(formula,
                     nthin = 1) {
 
   if (class(x1) != 'data.frame' || class(x2) != 'data.frame') {stop('X1 and X2 need to be data frames.')}
-
+  
   # formula = as.formula(formula)
   data = MakeDesignMatrix(formula, x1)
-
   y = data$y
   x1 = as.matrix(data$X) # matrix to be used in the linear predictor
   x2 = makeModelMatrixFromDataFrame(x2, drop = FALSE) # matrix to be used in the BART component
-
+  
   colnames_x1 = colnames(x1)
   colnames_x2 = colnames(x2)
-
+  
   common_variables = which(colnames_x2%in%colnames_x1)
+  common_variables_orig_name = gsub('\\..*', '',colnames_x2)
+  aux_identify_factor_variables = list()
+  
+  for (jj in 1:length(colnames_x2)){
+    sampled_var_name = colnames_x2[jj]
+    sampled_var_orig_name = gsub('\\..*', '', sampled_var_name)
+    aux_identify_factor_variables[[jj]] = which(common_variables_orig_name %in% sampled_var_orig_name)
+  }
 
   # Extract control parameters
   node_min_size = node_min_size
@@ -399,14 +417,16 @@ cl_cspbart = function(formula,
                                    curr_tree = curr_trees[[j]],
                                    node_min_size = node_min_size,
                                    s = s,
-                                   common_vars = common_variables)
+                                   common_vars = common_variables,
+                                   aux_factor_var = aux_identify_factor_variables)
 
       # CURRENT TREE: compute the log of the marginalised likelihood + log of the tree prior
       l_old = tree_full_conditional(curr_trees[[j]],
                                     current_partial_residuals,
                                     sigma2,
                                     sigma2_mu,
-                                    common_variables) +
+                                    common_variables,
+                                    aux_identify_factor_variables) +
         get_tree_prior(curr_trees[[j]], alpha, beta, common_variables)
 
       # NEW TREE: compute the log of the marginalised likelihood + log of the tree prior
@@ -414,7 +434,8 @@ cl_cspbart = function(formula,
                                     current_partial_residuals,
                                     sigma2,
                                     sigma2_mu,
-                                    common_variables) +
+                                    common_variables,
+                                    aux_identify_factor_variables) +
         get_tree_prior(new_trees[[j]], alpha, beta, common_variables)
 
       # Exponentiate the results above
@@ -440,7 +461,8 @@ cl_cspbart = function(formula,
                                     current_partial_residuals,
                                     sigma2,
                                     sigma2_mu,
-                                    common_variables)
+                                    common_variables,
+                                    aux_identify_factor_variables)
       # Updating BART predictions
       current_fit = get_predictions(curr_trees[j], x2, single_tree = TRUE)
       yhat_bart = yhat_bart - tree_fits_store[,j] # subtract the old fit
@@ -466,6 +488,7 @@ cl_cspbart = function(formula,
   results <- list(trees = tree_store,
                   y_hat = y_hat_store,
                   beta_hat = beta_store,
+                  cov_mat_beta_hat = Omega_inv,
                   bart_hat = bart_store,
                   npost = npost,
                   nburn = nburn,

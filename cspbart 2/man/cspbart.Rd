@@ -81,5 +81,4 @@ Combined Semi-Parametric BART
 }
 \examples{
 #
-
 }

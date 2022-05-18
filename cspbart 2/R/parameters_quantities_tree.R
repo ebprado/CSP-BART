@@ -14,7 +14,7 @@
 # tree = new_trees[[j]]
 # R = current_partial_residuals
 # common_vars = common_variables
-tree_full_conditional = function(tree, R, sigma2, sigma2_mu, common_vars, aux_factor_var) {
+tree_full_conditional = function(tree, R, sigma2, sigma2_mu, common_vars) {
 
   # Function to compute log full conditional distribution for an individual tree
   # R is a vector of partial residuals
@@ -26,14 +26,10 @@ tree_full_conditional = function(tree, R, sigma2, sigma2_mu, common_vars, aux_fa
   if(nrow(tree$tree_matrix) != 1) {
     terminal_ancestors = get_ancestors(tree) # get the ancestor for all terminal nodes
     aux_table = table(terminal_ancestors[,1], terminal_ancestors[,2]) # create a table
-    which_terminal_no_double_split = NULL
-    for (k in 1:nrow(aux_table)){
-      split_var_ancestors = names(aux_table[k,])[aux_table[k,] != 0]
-      invalid_ancestors = any(unlist(lapply(aux_factor_var, function(x) all(split_var_ancestors %in% x))))
-      if (invalid_ancestors == TRUE) {which_terminal_no_double_split[k] = rownames(aux_table)[k]}
-    }
-    
-    which_terminal_no_double_split = as.numeric(which_terminal_no_double_split[!is.na(which_terminal_no_double_split)]) # terminals with only one ancestor where the ancestor is common to X1 and X2
+    which_terminals_one_split = which(apply(aux_table,1,sum) == 1) # Find terminals which have only one covariate as ancestor
+    get_index = apply(aux_table[which_terminals_one_split, ,drop=FALSE],1, function(x) which(x == 1)) # get the index of the column associated to the splitting rule
+    check_common_vars = get_index %in% which(colnames(aux_table) %in% common_vars) # check whether the covariate is common to X1 and X2
+    which_terminal_no_double_split = names(get_index)[check_common_vars] # terminals with only one ancestor where the ancestor is common to X1 and X2
 
     } else{
         which_terminal_no_double_split = 0 # stump
@@ -55,7 +51,7 @@ tree_full_conditional = function(tree, R, sigma2, sigma2_mu, common_vars, aux_fa
     return(log_post)
 }
 
-simulate_mu = function(tree, R, sigma2, sigma2_mu, common_vars, aux_factor_var) {
+simulate_mu = function(tree, R, sigma2, sigma2_mu, common_vars) {
 
   # Simulate mu values for a given tree
 
@@ -66,15 +62,11 @@ simulate_mu = function(tree, R, sigma2, sigma2_mu, common_vars, aux_factor_var) 
   if(nrow(tree$tree_matrix) != 1) {
     terminal_ancestors = get_ancestors(tree) # get the ancestor for all terminal nodes
     aux_table = table(terminal_ancestors[,1], terminal_ancestors[,2]) # create a table
-    which_terminal_no_double_split = NULL
-    for (k in 1:nrow(aux_table)){
-      split_var_ancestors = names(aux_table[k,])[aux_table[k,] != 0]
-      invalid_ancestors = any(unlist(lapply(aux_factor_var, function(x) all(split_var_ancestors %in% x))))
-      if (invalid_ancestors == TRUE) {which_terminal_no_double_split[k] = rownames(aux_table)[k]}
-    }
-    
-    which_terminal_no_double_split = as.numeric(which_terminal_no_double_split[!is.na(which_terminal_no_double_split)]) # terminals with only one ancestor where the ancestor is common to X1 and X2
-    
+    which_terminals_one_split = which(apply(aux_table,1,sum) == 1) # Find terminals which have only one covariate as ancestor
+    get_index = apply(aux_table[which_terminals_one_split, ,drop=FALSE],1, function(x) which(x == 1)) # get the index of the column associated to the splitting rule
+    check_common_vars = get_index %in% which(colnames(aux_table) %in% common_vars) # check whether the covariate is common to X1 and X2
+    which_terminal_no_double_split = as.numeric(names(get_index)[check_common_vars]) # terminals with only one ancestor where the ancestor is common to X1 and X2
+
   } else{
     which_terminal_no_double_split = 0 # stump
   }
