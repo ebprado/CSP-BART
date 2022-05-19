@@ -48,6 +48,12 @@ sspbart = function(formula,
 
   colnames_x1 = colnames(x1)
   colnames_x2 = colnames(x2)
+  
+  aux_identify_factor_variables = list()
+  
+  for (jj in 1:length(colnames_x2)){
+    aux_identify_factor_variables[[jj]] = jj
+  }
 
   # common_variables = which(colnames_x2%in%colnames_x1)
   common_variables = NULL
@@ -142,14 +148,16 @@ sspbart = function(formula,
                                      curr_tree = curr_trees[[j]],
                                      node_min_size = node_min_size,
                                      s = s,
-                                     common_vars = common_variables)
+                                     common_vars = common_variables,
+                                     aux_factor_var = aux_identify_factor_variables)
 
         # CURRENT TREE: compute the log of the marginalised likelihood + log of the tree prior
         l_old = tree_full_conditional(curr_trees[[j]],
                                       current_partial_residuals,
                                       sigma2,
                                       sigma2_mu,
-                                      common_variables) +
+                                      common_variables,
+                                      aux_identify_factor_variables) +
           get_tree_prior(curr_trees[[j]], alpha, beta, common_variables)
 
         # NEW TREE: compute the log of the marginalised likelihood + log of the tree prior
@@ -157,7 +165,8 @@ sspbart = function(formula,
                                       current_partial_residuals,
                                       sigma2,
                                       sigma2_mu,
-                                      common_variables) +
+                                      common_variables,
+                                      aux_identify_factor_variables) +
           get_tree_prior(new_trees[[j]], alpha, beta, common_variables)
 
         # Exponentiate the results above
@@ -183,7 +192,8 @@ sspbart = function(formula,
                                       current_partial_residuals,
                                       sigma2,
                                       sigma2_mu,
-                                      common_variables)
+                                      common_variables,
+                                      aux_identify_factor_variables)
       # Updating BART predictions
       current_fit = get_predictions(curr_trees[j], x2, single_tree = TRUE)
       yhat_bart = yhat_bart - tree_fits_store[,j] # subtract the old fit
@@ -271,6 +281,12 @@ cl_sspbart = function(formula,
 
   colnames_x1 = colnames(x1)
   colnames_x2 = colnames(x2)
+  
+  aux_identify_factor_variables = list()
+  
+  for (jj in 1:length(colnames_x2)){
+    aux_identify_factor_variables[[jj]] = jj
+  }
 
   # common_variables = which(colnames_x2%in%colnames_x1)
   common_variables = NULL
@@ -300,7 +316,7 @@ cl_sspbart = function(formula,
   p2 = ncol(x2)
   p = p1 + p2
   s = rep(1/p2, p2)
-  sigma2_b = 10000
+  sigma2_b = 4
   Omega_inv = diag(1/sigma2_b, p1)
   b = rep(0, p1)
   V = diag(p1)
@@ -361,14 +377,16 @@ cl_sspbart = function(formula,
                                    curr_tree = curr_trees[[j]],
                                    node_min_size = node_min_size,
                                    s = s,
-                                   common_vars = common_variables)
+                                   common_vars = common_variables,
+                                   aux_factor_var = aux_identify_factor_variables)
 
       # CURRENT TREE: compute the log of the marginalised likelihood + log of the tree prior
       l_old = tree_full_conditional(curr_trees[[j]],
                                     current_partial_residuals,
                                     sigma2,
                                     sigma2_mu,
-                                    common_variables) +
+                                    common_variables,
+                                    aux_identify_factor_variables) +
         get_tree_prior(curr_trees[[j]], alpha, beta, common_variables)
 
       # NEW TREE: compute the log of the marginalised likelihood + log of the tree prior
@@ -376,7 +394,8 @@ cl_sspbart = function(formula,
                                     current_partial_residuals,
                                     sigma2,
                                     sigma2_mu,
-                                    common_variables) +
+                                    common_variables,
+                                    aux_identify_factor_variables) +
         get_tree_prior(new_trees[[j]], alpha, beta, common_variables)
 
       # Exponentiate the results above
@@ -402,7 +421,8 @@ cl_sspbart = function(formula,
                                     current_partial_residuals,
                                     sigma2,
                                     sigma2_mu,
-                                    common_variables)
+                                    common_variables,
+                                    aux_identify_factor_variables)
       # Updating BART predictions
       current_fit = get_predictions(curr_trees[j], x2, single_tree = TRUE)
       yhat_bart = yhat_bart - tree_fits_store[,j] # subtract the old fit
