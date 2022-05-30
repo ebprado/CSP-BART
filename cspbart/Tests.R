@@ -20,7 +20,7 @@ friedman_data = function(n, num_cov, sd_error){
 
 n = 200
 ncov = 5
-var = 50
+var = 1
 data = friedman_data(n, ncov, sqrt(var))
 
 y = data$y # response variable
