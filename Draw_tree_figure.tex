@@ -6,10 +6,10 @@
 
 \begin{document}
 
-  \begin{figure}[H]
+ \begin{figure}[H]
   \captionsetup[subfigure]{font=normalsize}
         \centering
-        \begin{subfigure}[b]{0.485\textwidth}
+        \begin{subfigure}[t]{195pt}% approx 0.475 * \textwidth
             \centering
             \caption[]%
             {$\mathcal{T}^{(1)}_{1}$}
@@ -28,10 +28,10 @@ for tree={
     [$\mu_{13}$, circle,  edge label={node[midway,right, font=\footnotesize]{$\mbox{ FALSE }$}},]
 ]
 \end{forest}
-            \label{fig:mean and std of net14}
+            %\label{fig:mean and std of net14}
         \end{subfigure}
         \hfill
-        \begin{subfigure}[b]{0.485\textwidth}  
+        \begin{subfigure}[t]{195pt}  
             \centering 
             \caption[]%
             {$\mathcal{T}^{(2)}_{1}$}
@@ -53,10 +53,10 @@ for tree={
     ]
 ]
 \end{forest}
-            \label{fig:mean and std of net24}
+            %\label{fig:mean and std of net24}
         \end{subfigure}
-        \vskip2\baselineskip
-        \begin{subfigure}[b]{0.485\textwidth}   
+        \vskip\smallskipamount
+        \begin{subfigure}[t]{195pt}   
             \centering 
                         \caption[]%
             {$\mathcal{T}^{(3)}_{1}$}    
@@ -75,10 +75,10 @@ for tree={
     ]
 ]
 \end{forest}
-            \label{fig:mean and std of net34}
+          %  \label{fig:mean and std of net34}
         \end{subfigure}
         \hfill
-        \begin{subfigure}[b]{0.485\textwidth}   
+        \begin{subfigure}[t]{195pt}   
             \centering 
             \caption[]%
 {$\mathcal{T}^{(4)}_{1}$}  
@@ -86,41 +86,19 @@ for tree={
 for tree={
     grow=south, draw, minimum size=3ex, inner sep=3pt, s sep=7mm, l sep=6mm
         }
-[$\:x_{2} < 1\:$,
-    [$\:x_{4} < 0.75\:$,
+[$\:x_{1} < 0.5\:$,
+    [$\:x_{2} < 1\:$,
         [$\mu_{11}$, circle]
         [$\mu_{12}$, circle]
     ]
-    [$\:x_{1} < 0.5\:$,
+    [$\:x_{4} < 0.75\:$,
         [$\mu_{13}$, circle]
         [$\mu_{14}$, circle]
     ]
 ]
 \end{forest}
 \end{subfigure}
-\vskip\baselineskip
-\caption{BLA BLA \label{BCART}}
-\end{figure}
-
-
-\begin{figure}[H]
-\centering
-            \begin{forest}
-for tree={
-    grow=south, draw, minimum size=3ex, inner sep=3pt, s sep=7mm, l sep=6mm
-        }
-[$\:x_{1} < 0.5\:$,
-    [$\:x_{2} < 0.5\:$,
-        [$\:\:4\:\:$, circle]
-        [$-7$, circle]
-    ]
-    [$\:x_{3} < 0.5\:$,
-        [$\:\:3\:\:$, circle]
-        [$-8$, circle]
-    ]
-]
-\end{forest}\vfill
-\caption{ BLA BLA.}
-\label{LM_BART_tree}
+\vskip\smallskipamount
+\caption[Short caption BLA BLA.]{Long caption BLA BLA \label{BCART}}
 \end{figure}
 \end{document}
