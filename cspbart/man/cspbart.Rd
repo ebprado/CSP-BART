@@ -25,7 +25,7 @@ cspbart(
 )
 
 \method{predict}{cspbart}(object,
-        newdata_x1, 
+        newdata_x1,
         newdata_x2,
         type = c('all', 'median', 'mean'),
         ...)

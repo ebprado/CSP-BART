@@ -7,7 +7,7 @@
 #' @param ... Catches unused arguments.
 #' @usage
 #' \method{predict}{cspbart}(object,
-#'         newdata_x1, 
+#'         newdata_x1,
 #'         newdata_x2,
 #'         type = c('all', 'median', 'mean'),
 #'         ...)
@@ -68,7 +68,7 @@ predict.cspbart = function(object, newdata_x1, newdata_x2,
 #' @param ... Catches unused arguments.
 #' @usage
 #' \method{predict}{cl_cspbart}(object,
-#'         newdata_x1, 
+#'         newdata_x1,
 #'         newdata_x2,
 #'         type = c('all', 'median', 'mean'),
 #'         ...)

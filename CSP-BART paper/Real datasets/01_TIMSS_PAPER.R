@@ -19,7 +19,7 @@ RMedAE = function(true, predicted){
   sqrt(median(abs(true - predicted)))
 }
 # The datasets below can be downloaded in the section "Download TIMSS 2019 Data Files by Country" at https://timss2019.org/international-database/.
-# To reproduce our results, tick "Ireland" in the "Grade 8" and the dowload the files (SPSS Data).
+# To reproduce our results, tick "Ireland" in the "Grade 8" and then download the files (SPSS Data).
 
 
 # BSBG05B B eighth grade, S student, B rasch score, G general question, 
@@ -43,7 +43,7 @@ btm = btm[,keep_btm]
 
 # Merge data sets ------------------ 
 
-aa = left_join(bst, btm, by='IDTEALIN') # a lot of missing from btm
+aa = left_join(btm, bst, by='IDTEALIN') # a lot of missing from btm
 
 bb = left_join(bsg, bcg, by='IDSCHOOL')
 
@@ -87,7 +87,9 @@ data$BSMMAT01 = as.numeric(data$BSMMAT01)
 x2 = data[,-which(colnames(data) == 'BSMMAT01')]
 
 # Proposed method ---------------------------------- 
+start_time = proc.time()
 cspbart = cspbart::cspbart(BSMMAT01 ~ 1 + BCDGDAS, x1 = data, x2, ntrees = 50, nburn = 10000, npost=2000)
+proc.time() - start_time
 apply(cspbart$beta_hat,2,quantile, probs=0.05)
 apply(cspbart$beta_hat,2,quantile, probs=0.95)
 apply(cspbart$beta_hat,2,quantile, probs=0.5)
@@ -103,10 +105,11 @@ estimate_z = dbarts::bart2(BCDGDAS ~ ., data=data)
 pihat = rep(0.5, nrow(data))
 data2 = as.matrix(data[,-which(colnames(data) %in% c('BSMMAT01', 'BCDGDAS'))])
 # data2 = as.matrix(data[,-which(colnames(data) %in% c('BSMMAT01'))])
+start_time = proc.time()
 bcf = bcf(y = data$BSMMAT01, z = data$BCDGDAS, x_control = data2, x_moderate = data2,  pihat = pihat, nburn = 5000, nsim = 2000)
+proc.time() - start_time
 save(bcf,file = 'results_bcf_TIMSS2019.RData')
 load('results_bcf_TIMSS2019.RData')
-
 # mean(colMeans(bcf$tau)[data$BCDGDAS==1])
 # mean(colMeans(bcf$tau)[data$BCDGDAS==0])
 mean(colMeans(bcf$tau))
@@ -162,11 +165,13 @@ X_test = dbarts::makeModelMatrixFromDataFrame(X_test)
 Z_test = as.matrix(data[-s_train, which(colnames(data) != 'BSMMAT01')])
 n_test = nrow(Z_test)
 
+start_time = proc.time()
 chain1 <- VCBART(Y_train, X_train, Z_train, n_train, cutpoints = cutpoints,
                  X_test, Z_test, n_test,
                  intercept = TRUE, M = 50, error_structure = "ind",
                  split_probs_type = "adaptive", ht_sigma_y = TRUE,
                  nd = 2000, burn = 5000, verbose = TRUE, print_every = 50)
+proc.time() - start_time
 save(chain1,file = 'results_VCBART_no_vary_by_sex_TIMSS2019.RData')
 load('results_VCBART_no_vary_by_sex_TIMSS2019.RData')
 
@@ -191,8 +196,10 @@ dat1_test = dat1[-s_train,]
 datx2_train = dat1[s_train, -which(colnames(dat1) == 'BSMMAT01')]
 datx2_test = dat1[-s_train, -which(colnames(dat1) == 'BSMMAT01')]
 
+start_time = proc.time()
 cspbart = cspbart::cspbart(BSMMAT01 ~ 1 + BSDGEDUP + BSBM42BA + BCDGDAS, x1 = dat1_train,
                             datx2_train, ntrees = 50, nburn = 5000, npost=2000)
+proc.time() - start_time
 head(cspbart$beta_hat)
 save(cspbart,file = 'results_CSP_BART_TIMSS2019.RData')
 load('results_CSP_BART_TIMSS2019.RData')
