@@ -180,7 +180,8 @@ MakeDesignMatrix <- function(formula, data){
 
   # When there is no random effect terms (only fixed effects)
   if (is.na(IsThereRandomEffects[2])) {
-    termsFormula = terms(formula)
+    aux_termsFormula = formula(terms(formula, data=data))
+    termsFormula = terms(aux_termsFormula)
     getIntercept = attr(termsFormula, 'intercept')
     getCovariates = attr(termsFormula, 'term.labels')
     if (getIntercept == 0) {
@@ -233,7 +234,8 @@ MakeDesignMatrixPredict <- function(formula, data){
 
   # When there is no random effect terms (only fixed effects)
   if (is.na(IsThereRandomEffects[2])) {
-    termsFormula = terms(formula)
+    aux_termsFormula = formula(terms(formula, data=data))
+    termsFormula = terms(aux_termsFormula)
     getIntercept = attr(termsFormula, 'intercept')
     getCovariates = attr(termsFormula, 'term.labels')
     if (getIntercept == 0) {
@@ -309,8 +311,8 @@ get_ancestors_internal = function(tree){
   save_ancestor = NULL
   tree = tree$tree_matrix
   which_internal = which(tree[,'terminal'] == 0)
-  
-  
+
+
   if(nrow(tree) == 1) {
     save_ancestor = cbind(internal = NULL,
                           ancestor = NULL)
@@ -319,7 +321,7 @@ get_ancestors_internal = function(tree){
       internal_node = which_internal[k]
       parent = tree[internal_node, 'parent']
       get_split_var = tree[internal_node, 'split_variable']
-      
+
       save_ancestor = rbind(save_ancestor,
                             cbind(internal = internal_node,
                                   parent   = parent,
@@ -335,5 +337,5 @@ get_ancestors_internal = function(tree){
     }
   }
   return(save_ancestor[,,drop=FALSE])
-  
+
 }
