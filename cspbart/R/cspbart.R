@@ -57,7 +57,7 @@ cspbart = function(formula,
                    npost = 1000,
                    nthin = 1) {
 
-  if (class(x1) != 'data.frame' || class(x2) != 'data.frame') {stop('X1 and X2 need to be data frames.')}
+  if (!is.data.frame(x1) || !is.data.frame(x2)) {stop('X1 and X2 need to be data frames.')}
 
   # formula = as.formula(formula)
   data = MakeDesignMatrix(formula, x1)
@@ -310,21 +310,21 @@ cl_cspbart = function(formula,
                     npost = 1000,
                     nthin = 1) {
 
-  if (class(x1) != 'data.frame' || class(x2) != 'data.frame') {stop('X1 and X2 need to be data frames.')}
-  
+  if (!is.data.frame(x1) || !is.data.frame(x2)) {stop('X1 and X2 need to be data frames.')}
+
   # formula = as.formula(formula)
   data = MakeDesignMatrix(formula, x1)
   y = data$y
   x1 = as.matrix(data$X) # matrix to be used in the linear predictor
   x2 = makeModelMatrixFromDataFrame(x2, drop = FALSE) # matrix to be used in the BART component
-  
+
   colnames_x1 = colnames(x1)
   colnames_x2 = colnames(x2)
-  
+
   common_variables = which(colnames_x2%in%colnames_x1)
   common_variables_orig_name = gsub('\\..*', '',colnames_x2)
   aux_identify_factor_variables = list()
-  
+
   for (jj in 1:length(colnames_x2)){
     sampled_var_name = colnames_x2[jj]
     sampled_var_orig_name = gsub('\\..*', '', sampled_var_name)

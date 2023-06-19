@@ -9,6 +9,7 @@ sspbart(
   x1,
   x2,
   sparse = FALSE,
+  update_sigma_b = FALSE,
   ntrees = 50,
   node_min_size = 5,
   alpha = 0.95,
@@ -18,6 +19,7 @@ sspbart(
   mu_mu = 0,
   sigma2 = 1,
   sigma2_mu = 1,
+  sigma_b = 4,
   nburn = 1000,
   npost = 1000,
   nthin = 1
@@ -31,6 +33,8 @@ sspbart(
 \item{x2}{x}
 
 \item{sparse}{x}
+
+\item{update_sigma_b}{x}
 
 \item{ntrees}{x}
 
@@ -49,6 +53,8 @@ sspbart(
 \item{sigma2}{x}
 
 \item{sigma2_mu}{x}
+
+\item{sigma_b}{x}
 
 \item{nburn}{x}
 

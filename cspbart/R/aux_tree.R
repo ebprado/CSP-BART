@@ -247,7 +247,14 @@ MakeDesignMatrixPredict <- function(formula, data){
   }
 }
 
+#' Get covariates used as splits per iteration
 #' @export
+#' @param object x
+#' @param raw x
+#'
+#' @return x
+#' @examples
+#'
 var_used_trees = function(object, raw = FALSE) {
 
   # Create holder for predicted values
