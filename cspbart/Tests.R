@@ -10,6 +10,9 @@ library(cspbart)
 citation("cspbart")
 ?cspbart
 
+data(iris)
+cspbart::cspbart(formula=Sepal.Length ~ 0 + ., x1=iris, x2 = iris[,-1], ntrees = 50, nburn = 0, npost = 100)
+
 # Simulate from Friedman equation -------------------------
 friedman_data = function(n, num_cov, sd_error){
   x = matrix(runif(n*num_cov),n,num_cov)

@@ -2,6 +2,7 @@
 
 S3method(predict,"cl_cspbart")
 S3method(predict,"cspbart")
+export(bart)
 export(cl_cspbart)
 export(cl_sspbart)
 export(cspbart)
