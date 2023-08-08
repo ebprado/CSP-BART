@@ -144,6 +144,11 @@ sample_move = function(curr_tree, i, nburn){
 
 ## ---------------------------------------------------
 
+ChangeColnames <- function(x) {
+  colnames(x) <- paste0(".", colnames(x))
+  x
+}
+
 MakeDesignMatrix <- function(formula, data){
 
   IsThereRandomEffects = try(silent = TRUE,
@@ -184,11 +189,15 @@ MakeDesignMatrix <- function(formula, data){
     termsFormula = terms(aux_termsFormula)
     getIntercept = attr(termsFormula, 'intercept')
     getCovariates = attr(termsFormula, 'term.labels')
-    if (getIntercept == 0) {
-      X <- makeModelMatrixFromDataFrame(as.data.frame(data[,getCovariates, drop=FALSE]), drop = FALSE)
-    } else {
-      X <- makeModelMatrixFromDataFrame(as.data.frame(cbind(`(Intercept)` = 1, data[,getCovariates, drop=FALSE])), drop = FALSE)
+      # X <- makeModelMatrixFromDataFrame(as.data.frame(data[,getCovariates, drop=FALSE]), drop = FALSE)
+      X <- model.matrix(formula, data = data,
+                    contrasts.arg = lapply(data[, sapply(data, is.factor) | sapply(data, is.character), drop = FALSE],
+                                           function(x) ChangeColnames(contrasts(as.factor(x))))
+      )
+    if (getIntercept == 1){
+      X = X[,-1] # remove intercept
     }
+
     y_name = gsub('\\().*$', '', formula[2]) # get the response variable name
     y = data[,y_name]
     return(list(y = y,
@@ -238,10 +247,13 @@ MakeDesignMatrixPredict <- function(formula, data){
     termsFormula = terms(aux_termsFormula)
     getIntercept = attr(termsFormula, 'intercept')
     getCovariates = attr(termsFormula, 'term.labels')
-    if (getIntercept == 0) {
-      X <- makeModelMatrixFromDataFrame(as.data.frame(data[,getCovariates, drop=FALSE]), drop = FALSE)
-    } else {
-      X <- makeModelMatrixFromDataFrame(as.data.frame(cbind(`(Intercept)` = 1, data[,getCovariates, drop=FALSE])), drop = FALSE)
+    # X <- makeModelMatrixFromDataFrame(as.data.frame(data[,getCovariates, drop=FALSE]), drop = FALSE)
+    X <- model.matrix(formula, data = data,
+                      contrasts.arg = lapply(data[, sapply(data, is.factor) | sapply(data, is.character), drop = FALSE],
+                                             function(x) ChangeColnames(contrasts(as.factor(x))))
+    )
+    if (getIntercept == 1){
+      X = X[,-1] # remove intercept
     }
     return(list(X = X))
   }

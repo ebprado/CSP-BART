@@ -18,7 +18,7 @@
 #' @param nthin x
 #'
 #' @return x
-#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'terms' 'xtabs'
+#' @importFrom stats 'rgamma' 'rexp' 'dnorm' 'sd' 'rchisq' 'rnorm' 'pnorm' 'as.formula' 'terms' 'xtabs' 'contrasts'
 #' @importFrom truncnorm 'rtruncnorm'
 #' @importFrom lme4 'lFormula'
 #' @importFrom dbarts 'makeModelMatrixFromDataFrame'
