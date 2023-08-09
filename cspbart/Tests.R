@@ -23,6 +23,8 @@ ncov = 5
 var = 1
 data = friedman_data(n, ncov, sqrt(var))
 X1 = data.frame(y=data$y, data$x)
+X1$letters = factor(rep(letters[1:25], 4))
+X1$LET = rep(LETTERS[1:25], 4)
 X2 = data.frame(data$x)
 head(X2)
 # Run the semi-parametric BART (WITHOUT intercept)--------------

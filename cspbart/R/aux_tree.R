@@ -190,15 +190,20 @@ MakeDesignMatrix <- function(formula, data){
     getIntercept = attr(termsFormula, 'intercept')
     getCovariates = attr(termsFormula, 'term.labels')
       # X <- makeModelMatrixFromDataFrame(as.data.frame(data[,getCovariates, drop=FALSE]), drop = FALSE)
-      X <- model.matrix(formula, data = data,
-                    contrasts.arg = lapply(data[, sapply(data, is.factor) | sapply(data, is.character), drop = FALSE],
-                                           function(x) ChangeColnames(contrasts(as.factor(x))))
-      )
-      # I did this because it seems that the model.matrix function has a bug in the renaming when there isn't an intercept
-      vars_factor_char = sapply(data[, sapply(data, is.factor) | sapply(data, is.character)],
-                                function(x) levels(x)
-      )
+    backup_options <- options()
+    options(contrasts = rep ("contr.sum", 2))
+    X <- model.matrix(formula, data = data)
+    # X <- model.matrix(formula, data = data,
+    #                   contrasts.arg = lapply(data[, sapply(data, is.factor) | sapply(data, is.character), drop = FALSE],
+    #                                          function(x) ChangeColnames(contrasts(as.factor(x))))
+    # )
+    options(backup_options)
+    # I did this because it seems that the model.matrix function has a bug in the renaming when there isn't an intercept
+    vars_factor_char = lapply(data[, sapply(data, is.factor) | sapply(data, is.character)],
+                              function(x) levels(x)
+    )
 
+    if (length(vars_factor_char) > 0){
       orig_names = NULL
       orig_names_dot = NULL
 
@@ -210,6 +215,13 @@ MakeDesignMatrix <- function(formula, data){
       }
 
       colnames(X)[which(colnames(X) %in% orig_names)] = orig_names_dot[orig_names %in% colnames(X)]
+    }
+
+    if (getIntercept == 1){
+      X = X[,-1]
+    } else {
+      print('Add intercept to the formula!')
+    }
 
     y_name = gsub('\\().*$', '', formula[2]) # get the response variable name
     y = data[,y_name]
@@ -260,29 +272,41 @@ MakeDesignMatrixPredict <- function(formula, data){
     getIntercept = attr(termsFormula, 'intercept')
     getCovariates = attr(termsFormula, 'term.labels')
     # X <- makeModelMatrixFromDataFrame(as.data.frame(data[,getCovariates, drop=FALSE]), drop = FALSE)
-    X <- model.matrix(formula, data = data,
-                      contrasts.arg = lapply(data[, sapply(data, is.factor) | sapply(data, is.character), drop = FALSE],
-                                             function(x) ChangeColnames(contrasts(as.factor(x))))
-    )
-
+    backup_options <- options()
+    options(contrasts = rep ("contr.sum", 2))
+    X <- model.matrix(formula, data = data)
+    # X <- model.matrix(formula, data = data,
+    #                   contrasts.arg = lapply(data[, sapply(data, is.factor) | sapply(data, is.character), drop = FALSE],
+    #                                          function(x) ChangeColnames(contrasts(as.factor(x))))
+    # )
+    options(backup_options)
     # I did this because it seems that the model.matrix function has a bug in the renaming when there isn't an intercept
-    vars_factor_char = sapply(data[, sapply(data, is.factor) | sapply(data, is.character)],
+    vars_factor_char = lapply(data[, sapply(data, is.factor) | sapply(data, is.character)],
                               function(x) levels(x)
     )
 
-    orig_names = NULL
-    orig_names_dot = NULL
+    if (length(vars_factor_char) > 0){
+      orig_names = NULL
+      orig_names_dot = NULL
 
-    for (i in 1:length(vars_factor_char)){
-      sub_list_name = names(vars_factor_char[i])
-      values = vars_factor_char[i][[1]]
-      orig_names = append(orig_names, paste(sub_list_name, values, sep=''))
-      orig_names_dot = append(orig_names_dot, paste(sub_list_name, values, sep='.'))
+      for (i in 1:length(vars_factor_char)){
+        sub_list_name = names(vars_factor_char[i])
+        values = vars_factor_char[i][[1]]
+        orig_names = append(orig_names, paste(sub_list_name, values, sep=''))
+        orig_names_dot = append(orig_names_dot, paste(sub_list_name, values, sep='.'))
+      }
+
+      colnames(X)[which(colnames(X) %in% orig_names)] = orig_names_dot[orig_names %in% colnames(X)]
     }
 
-    colnames(X)[which(colnames(X) %in% orig_names)] = orig_names_dot[orig_names %in% colnames(X)]
+    if (getIntercept == 1){
+      X = X[,-1]
+    } else {
+      print('Add intercept to the formula!')
+    }
 
-        return(list(X = X))
+
+    return(list(X = X))
   }
 }
 
