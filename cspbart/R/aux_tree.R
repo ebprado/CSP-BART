@@ -196,7 +196,7 @@ MakeDesignMatrix <- function(formula, data){
       )
       # I did this because it seems that the model.matrix function has a bug in the renaming when there isn't an intercept
       vars_factor_char = sapply(data[, sapply(data, is.factor) | sapply(data, is.character)],
-                                function(x) unique(x)
+                                function(x) levels(x)
       )
 
       orig_names = NULL
@@ -267,7 +267,7 @@ MakeDesignMatrixPredict <- function(formula, data){
 
     # I did this because it seems that the model.matrix function has a bug in the renaming when there isn't an intercept
     vars_factor_char = sapply(data[, sapply(data, is.factor) | sapply(data, is.character)],
-                              function(x) unique(x)
+                              function(x) levels(x)
     )
 
     orig_names = NULL
