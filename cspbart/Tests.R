@@ -24,12 +24,12 @@ var = 1
 data = friedman_data(n, ncov, sqrt(var))
 X1 = data.frame(y=data$y, data$x)
 X1$letters = factor(rep(letters[1:25], 4))
-X1$LET = rep(LETTERS[1:25], 4)
+X1$LET = rep(LETTERS[1:4], 25)
 X2 = data.frame(data$x)
 head(X2)
 # Run the semi-parametric BART (WITHOUT intercept)--------------
 # set.seed(002)
-cspbart.fit = cspbart(formula = y ~ V4 + V5, x1 = X1, x2 = X2,
+cspbart.fit = cspbart(formula = y ~ V4 + V5 + LET, x1 = X1, x2 = X2,
                       ntrees = 10, nburn = 100, npost = 10,
                       alpha = 0.99, beta = 0.01)
 

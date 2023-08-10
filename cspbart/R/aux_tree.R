@@ -189,7 +189,7 @@ MakeDesignMatrix <- function(formula, data){
     termsFormula = terms(aux_termsFormula)
     getIntercept = attr(termsFormula, 'intercept')
     getCovariates = attr(termsFormula, 'term.labels')
-      # X <- makeModelMatrixFromDataFrame(as.data.frame(data[,getCovariates, drop=FALSE]), drop = FALSE)
+    # X <- makeModelMatrixFromDataFrame(as.data.frame(data[,getCovariates, drop=FALSE]), drop = FALSE)
     backup_options <- options()
     options(contrasts = rep ("contr.sum", 2))
     X <- model.matrix(formula, data = data)
@@ -213,14 +213,17 @@ MakeDesignMatrix <- function(formula, data){
         orig_names = append(orig_names, paste(sub_list_name, values, sep=''))
         orig_names_dot = append(orig_names_dot, paste(sub_list_name, values, sep='.'))
       }
-
-      colnames(X)[which(colnames(X) %in% orig_names)] = orig_names_dot[orig_names %in% colnames(X)]
     }
-
     if (getIntercept == 1){
       X = X[,-1]
+      column_names = colnames(X)
+      for (j in 1:ncol(X)){
+        colnames(X)[j] = orig_names_dot[orig_names %in% column_names[j]]
+      }
+
     } else {
-      print('Add intercept to the formula!')
+      print('Add the intercept to the formula!')
+      stop()
     }
 
     y_name = gsub('\\().*$', '', formula[2]) # get the response variable name
@@ -295,16 +298,18 @@ MakeDesignMatrixPredict <- function(formula, data){
         orig_names = append(orig_names, paste(sub_list_name, values, sep=''))
         orig_names_dot = append(orig_names_dot, paste(sub_list_name, values, sep='.'))
       }
-
-      colnames(X)[which(colnames(X) %in% orig_names)] = orig_names_dot[orig_names %in% colnames(X)]
     }
-
     if (getIntercept == 1){
       X = X[,-1]
-    } else {
-      print('Add intercept to the formula!')
-    }
+      column_names = colnames(X)
+      for (j in 1:ncol(X)){
+        colnames(X)[j] = orig_names_dot[orig_names %in% column_names[j]]
+      }
 
+    } else {
+      print('Add the intercept to the formula!')
+      stop()
+    }
 
     return(list(X = X))
   }
