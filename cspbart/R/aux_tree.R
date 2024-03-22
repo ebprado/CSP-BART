@@ -198,6 +198,14 @@ MakeDesignMatrix <- function(formula, data){
     #                                          function(x) ChangeColnames(contrasts(as.factor(x))))
     # )
     options(backup_options)
+
+    if (getIntercept == 1){
+      X = X[,-1]
+    } else {
+      print('Add the intercept to the formula!')
+      stop()
+    }
+
     # I did this because it seems that the model.matrix function has a bug in the renaming when there isn't an intercept
     vars_factor_char = lapply(data[, sapply(data, is.factor) | sapply(data, is.character)],
                               function(x) levels(x)
@@ -213,17 +221,10 @@ MakeDesignMatrix <- function(formula, data){
         orig_names = append(orig_names, paste(sub_list_name, values, sep=''))
         orig_names_dot = append(orig_names_dot, paste(sub_list_name, values, sep='.'))
       }
-    }
-    if (getIntercept == 1){
-      X = X[,-1]
       column_names = colnames(X)
       for (j in 1:ncol(X)){
         colnames(X)[j] = orig_names_dot[orig_names %in% column_names[j]]
       }
-
-    } else {
-      print('Add the intercept to the formula!')
-      stop()
     }
 
     y_name = gsub('\\().*$', '', formula[2]) # get the response variable name
@@ -283,6 +284,14 @@ MakeDesignMatrixPredict <- function(formula, data){
     #                                          function(x) ChangeColnames(contrasts(as.factor(x))))
     # )
     options(backup_options)
+
+    if (getIntercept == 1){
+      X = X[,-1]
+    } else {
+      print('Add the intercept to the formula!')
+      stop()
+    }
+
     # I did this because it seems that the model.matrix function has a bug in the renaming when there isn't an intercept
     vars_factor_char = lapply(data[, sapply(data, is.factor) | sapply(data, is.character)],
                               function(x) levels(x)
@@ -298,19 +307,11 @@ MakeDesignMatrixPredict <- function(formula, data){
         orig_names = append(orig_names, paste(sub_list_name, values, sep=''))
         orig_names_dot = append(orig_names_dot, paste(sub_list_name, values, sep='.'))
       }
-    }
-    if (getIntercept == 1){
-      X = X[,-1]
       column_names = colnames(X)
       for (j in 1:ncol(X)){
         colnames(X)[j] = orig_names_dot[orig_names %in% column_names[j]]
       }
-
-    } else {
-      print('Add the intercept to the formula!')
-      stop()
     }
-
     return(list(X = X))
   }
 }

@@ -40,6 +40,7 @@
 # nburn = 100
 # npost = 100
 # nthin = 1
+
 cspbart = function(formula,
                    x1, # it needs to contain the response
                    x2, # it doesn't need to contain the response
