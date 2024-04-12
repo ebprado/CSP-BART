@@ -219,7 +219,7 @@ prune_tree = function(X, y, curr_tree) {
   while(bad_node_to_prune) {
 
     # Choose a random terminal node
-    node_to_prune = sample(terminal_nodes, 1)
+    node_to_prune = resample(terminal_nodes)
 
     # Find the parent of this terminal node
     parent_pick = as.numeric(new_tree$tree_matrix[node_to_prune, 'parent'])
@@ -308,7 +308,7 @@ change_tree = function(X, y, curr_tree, node_min_size, common_vars, aux_factor_v
   internal_parent_of_terminals = table(new_tree$tree_matrix[terminal_nodes,'parent'])
   internal_parent_of_two_terminals = which(internal_parent_of_terminals > 1)
   internal_nodes = as.numeric(names(internal_parent_of_terminals[internal_parent_of_two_terminals]))
-  
+
   # Create a while loop to get good trees
   # Create a counter to stop after a certain number of bad trees
   max_bad_trees = 2
@@ -319,19 +319,19 @@ change_tree = function(X, y, curr_tree, node_min_size, common_vars, aux_factor_v
     new_tree = curr_tree
 
     # choose an internal node to change
-    node_to_change = sample(internal_nodes, 1)
-    
+    node_to_change = resample(internal_nodes)
+
     # get the ancestors for internal nodes
     save_ancestor = get_ancestors_internal(new_tree)
     aux_internals_below_above = xtabs(split_var ~ internal + parent, save_ancestor)
     index_internals_above = which(rownames(aux_internals_below_above)==node_to_change)
     index_internals_below = which(colnames(aux_internals_below_above)==node_to_change)
-    
+
     store_internal_above = colnames(aux_internals_below_above)[which(aux_internals_below_above[index_internals_above,] != 0)]
     store_internal_below = rownames(aux_internals_below_above)[which(aux_internals_below_above[,index_internals_below] != 0)]
     internal_nodes_above_below = as.numeric(c(store_internal_above, store_internal_below))
     split_vars_internal_nodes_above_below = unique(new_tree$tree_matrix[internal_nodes_above_below, 'split_variable'])
-    
+
     # Get the covariate that will be changed
     var_changed_node = as.numeric(new_tree$tree_matrix[node_to_change, 'split_variable'])
 

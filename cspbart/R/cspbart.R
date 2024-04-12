@@ -69,14 +69,21 @@ cspbart = function(formula,
   colnames_x1 = colnames(x1)
   colnames_x2 = colnames(x2)
 
-  common_variables = which(colnames_x2%in%colnames_x1)
-  common_variables_orig_name = gsub('\\..*', '',colnames_x2)
+  orig_colnames_x1 = gsub('\\..*', '', colnames_x1) # for categorical/factor predictors
+  orig_colnames_x2 = gsub('\\..*', '', colnames_x2)
+
+  common_variables = which(orig_colnames_x2%in%orig_colnames_x1)
+  common_variables_orig_name = unique(orig_colnames_x2[common_variables])
   aux_identify_factor_variables = list()
 
   for (jj in 1:length(colnames_x2)){
-    sampled_var_name = colnames_x2[jj]
-    sampled_var_orig_name = gsub('\\..*', '', sampled_var_name)
-    aux_identify_factor_variables[[jj]] = which(common_variables_orig_name %in% sampled_var_orig_name)
+    aux_ref = which(common_variables_orig_name == orig_colnames_x2[jj])
+    if (length(aux_ref) > 0){
+      aux_identify_factor_variables[[jj]] = which(orig_colnames_x2 %in% common_variables_orig_name[aux_ref])
+    }
+    else{
+      aux_identify_factor_variables[[jj]] = NA
+    }
   }
 
   # Extract control parameters
@@ -322,14 +329,21 @@ cl_cspbart = function(formula,
   colnames_x1 = colnames(x1)
   colnames_x2 = colnames(x2)
 
-  common_variables = which(colnames_x2%in%colnames_x1)
-  common_variables_orig_name = gsub('\\..*', '',colnames_x2)
+  orig_colnames_x1 = gsub('\\..*', '', colnames_x1) # for categorical/factor predictors
+  orig_colnames_x2 = gsub('\\..*', '', colnames_x2)
+
+  common_variables = which(orig_colnames_x2%in%orig_colnames_x1)
+  common_variables_orig_name = unique(orig_colnames_x2[common_variables])
   aux_identify_factor_variables = list()
 
   for (jj in 1:length(colnames_x2)){
-    sampled_var_name = colnames_x2[jj]
-    sampled_var_orig_name = gsub('\\..*', '', sampled_var_name)
-    aux_identify_factor_variables[[jj]] = which(common_variables_orig_name %in% sampled_var_orig_name)
+    aux_ref = which(common_variables_orig_name == orig_colnames_x2[jj])
+    if (length(aux_ref) > 0){
+      aux_identify_factor_variables[[jj]] = which(orig_colnames_x2 %in% common_variables_orig_name[aux_ref])
+    }
+    else{
+      aux_identify_factor_variables[[jj]] = NA
+    }
   }
 
   # Extract control parameters

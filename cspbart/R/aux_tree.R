@@ -335,7 +335,9 @@ var_used_trees = function(object, raw = FALSE) {
   vars_trees = matrix(NA, nrow=n_its, ncol=ntrees)
   for (i in seq_len(n_its)) {
     for (j in seq_len(ntrees)) {
-      aux = object$trees[[i]][[j]]$tree_matrix[,'split_variable']
+      new_tree = object$trees[[i]][[j]]$tree_matrix
+      internal_nodes = as.numeric(which(new_tree[,'terminal'] == 0))
+      aux = new_tree[internal_nodes, 'split_variable']
       if(length(aux) > 1){
         vars_trees[i,j] = paste(colnames_x2[unique(sort(aux[!is.na(aux)]))], collapse = ',')
       }
