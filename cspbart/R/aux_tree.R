@@ -205,13 +205,16 @@ MakeDesignMatrix <- function(formula, data){
     var_different_name = getCovariates[which_factors_have_different_name]
     corrected_colnames = NULL
 
-    for (i in 1:length(var_different_name)){
-      var_different_name_levels = vars_factor_char[[var_different_name[i]]]
-      corrected_colnames = append(corrected_colnames, paste(var_different_name[i], var_different_name_levels[-length(var_different_name_levels)], sep='')) # remove the reference level
-    }
+    if (length(var_different_name) > 0){
 
-    which_colnames_to_change = which(attr(X, 'assign') %in% which_factors_have_different_name)
-    colnames(X)[which_colnames_to_change] = corrected_colnames
+      for (i in 1:length(var_different_name)){
+        var_different_name_levels = vars_factor_char[[var_different_name[i]]]
+        corrected_colnames = append(corrected_colnames, paste(var_different_name[i], var_different_name_levels[-length(var_different_name_levels)], sep='')) # remove the reference level
+      }
+
+      which_colnames_to_change = which(attr(X, 'assign') %in% which_factors_have_different_name)
+      colnames(X)[which_colnames_to_change] = corrected_colnames
+    }
 
     # If I don't require intercept, model.matrix messes up wit the contrasts
 
@@ -304,13 +307,16 @@ MakeDesignMatrixPredict <- function(formula, data){
     var_different_name = getCovariates[which_factors_have_different_name]
     corrected_colnames = NULL
 
-    for (i in 1:length(var_different_name)){
-      var_different_name_levels = vars_factor_char[[var_different_name[i]]]
-      corrected_colnames = append(corrected_colnames, paste(var_different_name[i], var_different_name_levels[-length(var_different_name_levels)], sep='')) # remove the reference level
-    }
+    if (length(var_different_name) > 0){
 
-    which_colnames_to_change = which(attr(X, 'assign') %in% which_factors_have_different_name)
-    colnames(X)[which_colnames_to_change] = corrected_colnames
+      for (i in 1:length(var_different_name)){
+        var_different_name_levels = vars_factor_char[[var_different_name[i]]]
+        corrected_colnames = append(corrected_colnames, paste(var_different_name[i], var_different_name_levels[-length(var_different_name_levels)], sep='')) # remove the reference level
+      }
+
+      which_colnames_to_change = which(attr(X, 'assign') %in% which_factors_have_different_name)
+      colnames(X)[which_colnames_to_change] = corrected_colnames
+    }
 
     # If I don't require intercept, model.matrix messes up wit the contrasts
 
