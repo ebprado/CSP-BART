@@ -29,7 +29,7 @@ X2 = data.frame(data$x)
 head(X2)
 # Run the semi-parametric BART (WITHOUT intercept)--------------
 # set.seed(002)
-cspbart.fit = cspbart(formula = y ~ 1 + V1 + V2 + LET,
+cspbart.fit = cspbart(formula = y ~ 1 + V1 + V2 + LET + letters,
                       x1 = X1,
                       x2 = X2,
                       ntrees = 10, nburn = 100, npost = 100,
