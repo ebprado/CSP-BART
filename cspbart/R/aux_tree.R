@@ -199,17 +199,27 @@ MakeDesignMatrix <- function(formula, data){
     # )
     options(backup_options)
 
+    # I did this because it seems that the model.matrix function has a bug in the renaming when there isn't an intercept.
+    # Specifically, model.matrix doesn't keep column names the same for factors - and that's why this HORRIBLE manipulation.
+    vars_factor_char = lapply(data[, sapply(data, is.factor) | sapply(data, is.character)],
+                              function(x) levels(x)
+    )
+
+    which_factors_have_different_name = which(getCovariates %in% names(vars_factor_char))
+    var_different_name = getCovariates[which_factors_have_different_name]
+    var_different_name_levels = vars_factor_char[[var_different_name]]
+    corrected_colnames = paste(var_different_name, var_different_name_levels, sep='')
+
+    which_colnames_to_change = attr(X, 'assign') == which_factors_have_different_name
+    colnames(X)[which_colnames_to_change] = corrected_colnames[-length(corrected_colnames)] # remove the reference level
+
+
     if (getIntercept == 1){
       X = X[,-1]
     } else {
       print('Add the intercept to the formula!')
       stop()
     }
-
-    # I did this because it seems that the model.matrix function has a bug in the renaming when there isn't an intercept
-    vars_factor_char = lapply(data[, sapply(data, is.factor) | sapply(data, is.character)],
-                              function(x) levels(x)
-    )
 
     if (length(vars_factor_char) > 0){
       orig_names = NULL
@@ -223,6 +233,8 @@ MakeDesignMatrix <- function(formula, data){
       }
       column_names = colnames(X)
       for (j in 1:ncol(X)){
+        is_factor_var = which(orig_names %in% column_names[j])
+        if(length(is_factor_var) > 0)
         colnames(X)[j] = orig_names_dot[orig_names %in% column_names[j]]
       }
     }

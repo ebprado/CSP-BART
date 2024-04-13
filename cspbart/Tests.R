@@ -23,19 +23,23 @@ ncov = 5
 var = 1
 data = friedman_data(n, ncov, sqrt(var))
 X1 = data.frame(y=data$y, data$x)
-X1$letters = factor(rep(letters[1:25], 4))
-X1$LET = rep(LETTERS[1:4], 25)
+X1$letters = as.factor(rep(letters[1:25], 4))
+X1$LET = as.factor(rep(LETTERS[1:4], 25))
 X2 = data.frame(data$x)
 head(X2)
 # Run the semi-parametric BART (WITHOUT intercept)--------------
 # set.seed(002)
-cspbart.fit = cspbart(formula = y ~ V4 + V5 + LET, x1 = X1, x2 = X2,
-                      ntrees = 10, nburn = 100, npost = 10,
+cspbart.fit = cspbart(formula = y ~ 1 + V1 + V2 + LET,
+                      x1 = X1,
+                      x2 = X2,
+                      ntrees = 10, nburn = 100, npost = 100,
                       alpha = 0.99, beta = 0.01)
 
 colMeans(cspbart.fit$beta_hat)
 
-aa = var_used_trees(cspbart.fit, raw = FALSE)
+aa = var_used_trees(cspbart.fit, raw = TRUE)
+
+cspbart.fit$trees[[1]][[10]]
 
 df <- data.frame(x = factor(rep(c("a", "b", "c"), times = 3)),
                  y = as.character(rep(c("d", "e", "f"), times = 3)),
