@@ -1,5 +1,5 @@
 # Accounting for shared covariates in semi-parametric Bayesian additive regression trees
-This repository houses R scripts and data sets that can be used to reproduce the results presented in the paper [_Accounting for shared covariates in semi-parametric Bayesian additive regression trees_. The Annals of Applied Statistics (to appear)](https://arxiv.org/pdf/2108.07636.pdf).
+This repository houses R scripts and data sets that can be used to reproduce the results presented in the paper [_Accounting for shared covariates in semi-parametric Bayesian additive regression trees_. The Annals of Applied Statistics (to appear, 2024)](https://arxiv.org/pdf/2108.07636.pdf).
 
 In addition, it provides an implementation of CSP-BART in the format of an R package named ```spbart```.
 
